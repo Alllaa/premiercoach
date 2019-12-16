@@ -10,11 +10,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-//  bodyWidget() {
-//    return Container(
-//      child: Center(child: Text("Don't have account?SignUp")),
-//    );
-//  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Color(0xff05F0FF),
       resizeToAvoidBottomPadding: false,
-//floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-//      floatingActionButton: FloatingActionButton(
-//        onPressed: () {
-//          print("Hello");
-//        },
-//        child: bodyWidget(),
-//      ),
+
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
