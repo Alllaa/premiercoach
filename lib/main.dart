@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:premiercoach/login_screen.dart';
-import 'package:premiercoach/signup_screen.dart';
-import 'package:premiercoach/splash_screen.dart';
+import 'package:premiercoach/HomeUI/HomePage.dart';
+import 'package:premiercoach/RegistrationUi/login_screen.dart';
+import 'package:premiercoach/RegistrationUi/signup_screen.dart';
+import 'package:premiercoach/SplashScreen/splash_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,10 +16,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SplashScreen(),
+      home: HomePage(),
       routes: {
         LoginScreen.id: (context) => LoginScreen(),
         SignUpScreen.id: (context) => SignUpScreen(),
+        HomePage.id: (context) => HomePage(),
       },
     );
   }

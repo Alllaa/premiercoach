@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-import 'package:premiercoach/login_screen.dart';
+import 'package:premiercoach/RegistrationUi/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
