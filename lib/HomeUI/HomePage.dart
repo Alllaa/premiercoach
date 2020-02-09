@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:premiercoach/HomeUI/DetailsPage.dart';
 import 'package:premiercoach/HomeUI/PredictWidget.dart';
 import 'package:premiercoach/HomeUI/TableWidget.dart';
 class HomePage extends StatefulWidget {
@@ -213,83 +214,90 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
   Widget matches(int index){
-    return Container(
-      margin: EdgeInsets.only(left: 10.0,right: 10.0,bottom: 10.0),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        border: Border.all(color: Color(0xff00FF87)),
-        borderRadius: BorderRadius.all(Radius.circular(25.0)),
-      ),
-      child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.only(left: 10.0,right: 10.0,bottom: 4.0,top: 4.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                child: Image.asset("assets/images/manu.png"),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width/4.0,
-                margin: EdgeInsets.only(left: 5.0),
-                child:AutoSizeText(
-                  'Manchester United',
-                  style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
+    return InkWell(
+      onTap: (){
+        Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => DetailsPage()));
+      },
+      splashColor: Color(0xff37003C),
+      highlightColor: Color(0xff37003C),
+      child: Container(
+        margin: EdgeInsets.only(left: 10.0,right: 10.0,bottom: 10.0),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          border: Border.all(color: Color(0xff00FF87)),
+          borderRadius: BorderRadius.all(Radius.circular(25.0)),
+        ),
+        child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.only(left: 10.0,right: 10.0,bottom: 4.0,top: 4.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  child: Image.asset("assets/images/manu.png"),
                 ),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          child: Column(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(top: 5.0),
-                child: Text("VS",style: TextStyle(fontSize: 15,color: Colors.white),),
-              ),
-              Container(
-                child: Text("24/09/2019",style: TextStyle(fontSize: 15,color: Colors.white),),
-              ),
-              Container(
-                child: Text("13:30",style: TextStyle(fontSize: 15,color: Colors.white),),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.only(left: 10.0,right: 10.0,bottom: 4.0,top: 4.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                child: Image.asset("assets/images/manu.png"),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width/4.0,
-                margin: EdgeInsets.only(left: 5.0),
-                child:AutoSizeText(
-                  'Manchester United',
-                  style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
+                Container(
+                  width: MediaQuery.of(context).size.width/4.0,
+                  margin: EdgeInsets.only(left: 5.0),
+                  child:AutoSizeText(
+                    'Manchester United',
+                    style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-               ),
-            ],
+              ],
+            ),
           ),
+          Container(
+            child: Column(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(top: 5.0),
+                  child: Text("VS",style: TextStyle(fontSize: 15,color: Colors.white),),
+                ),
+                Container(
+                  child: Text("24/09/2019",style: TextStyle(fontSize: 15,color: Colors.white),),
+                ),
+                Container(
+                  child: Text("13:30",style: TextStyle(fontSize: 15,color: Colors.white),),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(left: 10.0,right: 10.0,bottom: 4.0,top: 4.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  child: Image.asset("assets/images/manu.png"),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width/4.0,
+                  margin: EdgeInsets.only(left: 5.0),
+                  child:AutoSizeText(
+                    'Manchester United',
+                    style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                  ),
+                 ),
+              ],
+            ),
+          ),
+        ],
         ),
-      ],
       ),
     );
   }
-
   Widget homeWidget(){
     return SingleChildScrollView(
       child: Container(
