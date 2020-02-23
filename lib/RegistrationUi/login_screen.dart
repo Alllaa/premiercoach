@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:premiercoach/HomeUI/HomePage.dart';
 import 'package:premiercoach/RegistrationUi/signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -102,7 +103,9 @@ class _LoginScreenState extends State<LoginScreen> {
 //                color: Color(),
                       child: InkWell(
                           borderRadius: BorderRadius.circular(20),
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).pushReplacementNamed(HomePage.id);
+                          },
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),

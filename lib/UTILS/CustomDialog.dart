@@ -90,6 +90,7 @@ class CustomDialog extends StatelessWidget {
                   width: 30,
                   child: TextField(
                       maxLines: 1,
+                    textAlign: TextAlign.center,
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(1),
                       ],
@@ -113,6 +114,7 @@ class CustomDialog extends StatelessWidget {
                         alignment: Alignment.center,
                         width: 30,
                         child: TextField(
+                          textAlign: TextAlign.center,
                           maxLines: 1,
                           inputFormatters: [
                             LengthLimitingTextInputFormatter(1),

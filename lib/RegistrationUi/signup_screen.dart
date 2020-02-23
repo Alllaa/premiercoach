@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:premiercoach/HomeUI/HomePage.dart';
+import 'package:premiercoach/RegistrationUi/login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   static final String id = "signup_screen";
@@ -140,7 +142,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 //                color: Color(),
                         child: InkWell(
                             borderRadius: BorderRadius.circular(20),
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.of(context).pushReplacementNamed(HomePage.id);
+                            },
                             child: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
@@ -187,7 +191,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ],
                           ),
                           onTap: () {
-                            Navigator.of(context).pop();
+                            Navigator.of(context).pushReplacementNamed(LoginScreen.id);
                           },
                       ),
               ),
@@ -249,7 +253,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               width: MediaQuery.of(context).size.width/4,
                               child: InkWell(
                                   borderRadius: BorderRadius.circular(20),
-                                  onTap: () {},
+                                  onTap: () {
+
+                                  },
                                   child: Container(
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(20),
