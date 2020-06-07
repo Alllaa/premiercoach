@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           EdgeInsets.only(left: 0, top: 28, right: 0, bottom: 0),
                       child: Image(
                         image: AssetImage(
-                            'assets/images/Premier-League-Transparent-Background 1.png'),
+                            'assets/images/Premier-League-Transparent-Background_1.png'),
                       ),
                     ),
                     Text(

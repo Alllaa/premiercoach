@@ -43,7 +43,16 @@ class _RegisterationState extends State<Registeration> {
   TextEditingController email = new TextEditingController();
   TextEditingController password = new TextEditingController();
   TextEditingController confirmPassword = new TextEditingController();
-
+  Color firstNameColor = Colors.black.withOpacity(.3);
+  Color lastNameColor = Colors.black.withOpacity(.3);
+  Color emailColor = Colors.black.withOpacity(.3);
+  Color passwordColor = Colors.black.withOpacity(.3);
+  Color confirmPasswordColor = Colors.black.withOpacity(.3);
+  bool firstNameEntered = false;
+  bool emailEntered = false;
+  bool lastNameEntered = false;
+  bool passwordEntered = false;
+  bool confirmPasswordEntered = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   actionSnackBar(String message) {
@@ -54,7 +63,94 @@ class _RegisterationState extends State<Registeration> {
     );
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
+  validateData(){
+    if(firstName.text.isEmpty){
+      setState(() {
+        firstNameColor = Colors.red;
+        firstNameEntered = false;
+      });
+    }else{
+      setState(() {
+        firstNameColor = Colors.grey.withOpacity(.5);
+        firstNameEntered = true;
+      });
+    }
 
+    if(lastName.text.isEmpty){
+      setState(() {
+        lastNameColor = Colors.red;
+        lastNameEntered = false;
+      });
+    }else{
+      setState(() {
+        lastNameColor = Colors.black.withOpacity(.3);
+        lastNameEntered = true;
+      });
+    }
+
+    if(firstName.text.isEmpty){
+      setState(() {
+        firstNameColor = Colors.red;
+        firstNameEntered = false;
+      });
+    }else{
+      setState(() {
+        firstNameColor = Colors.black.withOpacity(.3);
+        firstNameEntered = true;
+      });
+    }
+
+    if(email.text.isEmpty){
+      setState(() {
+        emailColor = Colors.red;
+        emailEntered = false;
+      });
+    }else{
+      setState(() {
+        emailColor = Colors.black.withOpacity(.3);
+        emailEntered = true;
+      });
+    }
+
+    if(password.text.isEmpty){
+      setState(() {
+        passwordColor = Colors.red;
+        passwordEntered = false;
+      });
+    }else{
+      setState(() {
+        passwordColor = Colors.black.withOpacity(.3);
+        passwordEntered = true;
+      });
+    }
+
+    if(confirmPassword.text.isEmpty){
+      setState(() {
+        confirmPasswordColor = Colors.red;
+        confirmPasswordEntered = false;
+      });
+    }else{
+      setState(() {
+        confirmPasswordColor = Colors.black.withOpacity(.3);
+        confirmPasswordEntered = true;
+      });
+    }
+    if(confirmPasswordEntered && firstNameEntered && lastNameEntered && emailEntered && passwordEntered){
+      if (password.text == confirmPassword.text) {
+        final bloc = BlocProvider.of<AuthenticationBloc>(context);
+        bloc.add(RegisterEvent(firstName.text, lastName.text,
+            email.text,
+            password.text,context,_scaffoldKey));
+      } else {
+        actionSnackBar("the passwords doesn't match");
+        setState(() {
+          confirmPasswordColor = Colors.red;
+          confirmPasswordEntered = false;
+        });
+      }
+    }
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,7 +172,7 @@ class _RegisterationState extends State<Registeration> {
                             left: 0, top: 28, right: 0, bottom: 0),
                         child: Image(
                           image: AssetImage(
-                              'assets/images/Premier-League-Transparent-Background 1.png'),
+                              'assets/images/Premier-League-Transparent-Background_1.png'),
                         ),
                       ),
                       Container(
@@ -89,6 +185,7 @@ class _RegisterationState extends State<Registeration> {
                               color: Color(0xff38003D)),
                         ),
                       ),
+
                       Container(
                         margin: EdgeInsets.only(top: 20, right: 20, left: 20),
                         alignment: Alignment.centerLeft,
@@ -96,109 +193,20 @@ class _RegisterationState extends State<Registeration> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            Container(
-                              width: MediaQuery.of(context).size.width / 2.5,
-                              child: TextField(
-                                onChanged: (text) {
-                                  print("First textfield $text");
-                                },
-                                controller: firstName,
-                                decoration: InputDecoration(
-                                  border: new OutlineInputBorder(
-                                      borderSide: new BorderSide(
-                                          color: Color(0xff38003D)),
-                                      borderRadius: BorderRadius.circular(20)),
-                                  hintText: 'First Name',
-
-
-                                ),
-                                autofocus: false,
-
-                              ),
-                            ),
+                            firsNameCard(),
                             SizedBox(
                               width: 20,
                             ),
-                            Container(
-                              width: MediaQuery.of(context).size.width / 2.5,
-                              child: TextField(
-                                onChanged: (text) {
-                                  print("First textfield $text");
-                                },
-                                controller: lastName,
-                                decoration: InputDecoration(
-                                  border: new OutlineInputBorder(
-                                      borderSide: new BorderSide(
-                                          color: Color(0xff38003D)),
-                                      borderRadius: BorderRadius.circular(20)),
-                                  hintText: 'Last Name',
-                                ),
-                              ),
-                            ),
+                            lastNameCard(),
                           ],
                         ),
                       ),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-//                margin: EdgeInsets.only(top: 30),
-                        child: TextField(
-                          onChanged: (text) {
-                            print("First textfield $text");
-                          },
-                          controller: email,
-                          decoration: InputDecoration(
-                              border: new OutlineInputBorder(
-                                  borderSide:
-                                      new BorderSide(color: Color(0xff38003D)),
-                                  borderRadius: BorderRadius.circular(20)),
-                              prefixIcon: Icon(Icons.email),
-                              hintText: 'Email Address'),
-                          autofocus: false,
-
-                        ),
-                      ),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-//                  margin: EdgeInsets.only(top:30),
-                        child: TextField(
-                          onChanged: (text) {
-                            print("First textfield $text");
-                          },
-                          controller: password,
-                          decoration: InputDecoration(
-                              border: new OutlineInputBorder(
-                                borderSide:
-                                    new BorderSide(color: Color(0xff38003D)),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              prefixIcon: Icon(Icons.vpn_key),
-                              hintText: 'Password'),
-                          autofocus: false,
-
-                        ),
-                      ),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-//                  margin: EdgeInsets.only(top:30),
-                        child: TextField(
-                          onChanged: (text) {
-                            print("First textfield $text");
-                          },
-                          controller: confirmPassword,
-                          decoration: InputDecoration(
-                              border: new OutlineInputBorder(
-                                borderSide:
-                                    new BorderSide(color: Color(0xff38003D)),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              prefixIcon: Icon(Icons.vpn_key),
-                              hintText: 'Confiirm Password'),
-                              autofocus: false,
-                        ),
-                      ),
+                      SizedBox(height: 15.0,),
+                      emailCard(),
+                      SizedBox(height: 15.0,),
+                      passwordCard(),
+                      SizedBox(height: 15.0,),
+                      confirmPasswordCard(),
                       Container(
                         margin: EdgeInsets.only(top: 30, left: 20, right: 20),
                         height: 50,
@@ -207,16 +215,7 @@ class _RegisterationState extends State<Registeration> {
                         child: InkWell(
                             borderRadius: BorderRadius.circular(20),
                             onTap: () {
-
-                              if (password.text == confirmPassword.text) {
-
-                                final bloc = BlocProvider.of<AuthenticationBloc>(context);
-                                bloc.add(RegisterEvent(firstName.text, lastName.text,
-                                    email.text,
-                                    password.text,context,_scaffoldKey));
-                              } else {
-                                actionSnackBar("the passwords doesn't match");
-                              }
+                              validateData();
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -364,5 +363,135 @@ class _RegisterationState extends State<Registeration> {
             ),
           ),
         ));
+  }
+  Widget firsNameCard(){
+    return Container(
+      padding: EdgeInsets.only(top: 3.0,bottom: 3.0,left: 6.0,right: 6.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(15.0)),
+        border: Border.all(color: firstNameColor)
+      ),
+      width: MediaQuery.of(context).size.width / 2.5,
+      child: TextField(
+        onChanged: (text) {
+          setState(() {
+            firstNameColor = Colors.black.withOpacity(.3);
+            firstNameEntered = true;
+          });
+          print("First textfield $text");
+        },
+        controller: firstName,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: 'First Name',
+
+
+        ),
+        autofocus: false,
+
+      ),
+    );
+  }
+  Widget lastNameCard(){
+    return Container(
+      padding: EdgeInsets.only(top: 3.0,bottom: 3.0,left: 6.0,right: 6.0),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+          border: Border.all(color: lastNameColor)
+      ),
+      width: MediaQuery.of(context).size.width / 2.5,
+      child: TextField(
+        onChanged: (text) {
+          setState(() {
+            lastNameColor = Colors.black.withOpacity(.3);;
+            lastNameEntered = true;
+          });
+          print("First textfield $text");
+        },
+        controller: lastName,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: 'Last Name',
+        ),
+      ),
+    );
+  }
+  Widget emailCard(){
+    return Container(
+      margin: EdgeInsets.only(left: 20.0,right: 20.0),
+      padding: EdgeInsets.only(top: 3.0,bottom: 3.0,left: 6.0,right: 6.0),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+          border: Border.all(color: emailColor)
+      ),
+      child: TextField(
+        onChanged: (text) {
+          setState(() {
+            emailColor = Colors.black.withOpacity(.3);;
+            emailEntered = true;
+          });
+          print("First textfield $text");
+        },
+        controller: email,
+        decoration: InputDecoration(
+            border: InputBorder.none,
+            prefixIcon: Icon(Icons.email),
+            hintText: 'Email Address'),
+        autofocus: false,
+
+      ),
+    );
+  }
+  Widget passwordCard(){
+    return  Container(
+      margin: EdgeInsets.only(left: 20.0,right: 20.0),
+      padding: EdgeInsets.only(top: 3.0,bottom: 3.0,left: 6.0,right: 6.0),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+          border: Border.all(color: passwordColor)
+      ),
+      child: TextField(
+        onChanged: (text) {
+          setState(() {
+            passwordColor = Colors.black.withOpacity(.3);;
+            passwordEntered = true;
+          });
+          print("First textfield $text");
+        },
+        controller: password,
+        decoration: InputDecoration(
+            border: InputBorder.none,
+            prefixIcon: Icon(Icons.vpn_key),
+            hintText: 'Password'),
+        autofocus: false,
+
+      ),
+    );
+  }
+  Widget confirmPasswordCard(){
+    return Container(
+      margin: EdgeInsets.only(left: 20.0,right: 20.0),
+      padding: EdgeInsets.only(top: 3.0,bottom: 3.0,left: 6.0,right: 6.0),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+          border: Border.all(color: confirmPasswordColor)
+      ),
+      child: TextField(
+        onChanged: (text) {
+          setState(() {
+            confirmPasswordColor = Colors.black.withOpacity(.3);;
+            confirmPasswordEntered = true;
+          });
+          print("First textfield $text");
+        },
+        controller: confirmPassword,
+        decoration: InputDecoration(
+            border: InputBorder.none,
+            prefixIcon: Icon(Icons.vpn_key),
+            hintText: 'Confiirm Password'
+        ),
+        autofocus: false,
+      ),
+    );
   }
 }

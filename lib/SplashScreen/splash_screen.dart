@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/images/Premier-League-Transparent-Background 1.png')
+              image: AssetImage('assets/images/Premier-League-Transparent-Background_1.png')
             )
           ),
         ),
