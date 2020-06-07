@@ -1,9 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:premiercoach/HomeUI/HomePage.dart';
 import 'package:premiercoach/RegistrationUi/login_screen.dart';
+import 'package:premiercoach/auth_bloc/authentication_bloc.dart';
+import 'package:premiercoach/auth_bloc/authentication_event.dart';
+import 'package:premiercoach/auth_bloc/authentication_state.dart';
+import 'package:premiercoach/repository/authentication.dart';
 
 class SignUpScreen extends StatefulWidget {
   static final String id = "signup_screen";
@@ -16,7 +21,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     FlutterStatusbarcolor.setStatusBarColor(Color(0xff05F0FF));
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthenticationBloc>(
+          create: (context) => AuthenticationBloc(AuthApi()),
+        ),
+      ],
+      child: Registeration(),
+    );
+  }
+}
+
+class Registeration extends StatefulWidget {
+  @override
+  _RegisterationState createState() => _RegisterationState();
+}
+
+class _RegisterationState extends State<Registeration> {
+  TextEditingController firstName = new TextEditingController();
+  TextEditingController lastName = new TextEditingController();
+  TextEditingController email = new TextEditingController();
+  TextEditingController password = new TextEditingController();
+  TextEditingController confirmPassword = new TextEditingController();
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  actionSnackBar(String message) {
+    final snackBar  = SnackBar(
+      backgroundColor: Colors.red,
+      duration: Duration(seconds: 2),
+      content: Text(message),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         backgroundColor: Color(0xff05F0FF),
         resizeToAvoidBottomPadding: false,
         body: SingleChildScrollView(
@@ -30,7 +72,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     children: <Widget>[
                       Container(
                         alignment: Alignment.center,
-                        margin: EdgeInsets.only(left: 0, top: 28, right: 0, bottom: 0),
+                        margin: EdgeInsets.only(
+                            left: 0, top: 28, right: 0, bottom: 0),
                         child: Image(
                           image: AssetImage(
                               'assets/images/Premier-League-Transparent-Background 1.png'),
@@ -59,12 +102,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 onChanged: (text) {
                                   print("First textfield $text");
                                 },
+                                controller: firstName,
                                 decoration: InputDecoration(
                                   border: new OutlineInputBorder(
-                                      borderSide: new BorderSide(color: Color(0xff38003D)),
+                                      borderSide: new BorderSide(
+                                          color: Color(0xff38003D)),
                                       borderRadius: BorderRadius.circular(20)),
-                                      hintText: 'First Name',
+                                  hintText: 'First Name',
+
+
                                 ),
+                                autofocus: false,
+
                               ),
                             ),
                             SizedBox(
@@ -76,10 +125,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 onChanged: (text) {
                                   print("First textfield $text");
                                 },
+                                controller: lastName,
                                 decoration: InputDecoration(
                                   border: new OutlineInputBorder(
-                                      borderSide:
-                                          new BorderSide(color: Color(0xff38003D)),
+                                      borderSide: new BorderSide(
+                                          color: Color(0xff38003D)),
                                       borderRadius: BorderRadius.circular(20)),
                                   hintText: 'Last Name',
                                 ),
@@ -89,50 +139,64 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
 //                margin: EdgeInsets.only(top: 30),
                         child: TextField(
                           onChanged: (text) {
                             print("First textfield $text");
                           },
+                          controller: email,
                           decoration: InputDecoration(
                               border: new OutlineInputBorder(
-                                  borderSide: new BorderSide(color: Color(0xff38003D)),
+                                  borderSide:
+                                      new BorderSide(color: Color(0xff38003D)),
                                   borderRadius: BorderRadius.circular(20)),
                               prefixIcon: Icon(Icons.email),
                               hintText: 'Email Address'),
+                          autofocus: false,
+
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
 //                  margin: EdgeInsets.only(top:30),
                         child: TextField(
                           onChanged: (text) {
                             print("First textfield $text");
                           },
+                          controller: password,
                           decoration: InputDecoration(
                               border: new OutlineInputBorder(
-                                borderSide: new BorderSide(color: Color(0xff38003D)),
+                                borderSide:
+                                    new BorderSide(color: Color(0xff38003D)),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               prefixIcon: Icon(Icons.vpn_key),
                               hintText: 'Password'),
+                          autofocus: false,
+
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
 //                  margin: EdgeInsets.only(top:30),
                         child: TextField(
                           onChanged: (text) {
                             print("First textfield $text");
                           },
+                          controller: confirmPassword,
                           decoration: InputDecoration(
                               border: new OutlineInputBorder(
-                                borderSide: new BorderSide(color: Color(0xff38003D)),
+                                borderSide:
+                                    new BorderSide(color: Color(0xff38003D)),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               prefixIcon: Icon(Icons.vpn_key),
                               hintText: 'Confiirm Password'),
+                              autofocus: false,
                         ),
                       ),
                       Container(
@@ -143,7 +207,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: InkWell(
                             borderRadius: BorderRadius.circular(20),
                             onTap: () {
-                              Navigator.of(context).pushReplacementNamed(HomePage.id);
+
+                              if (password.text == confirmPassword.text) {
+
+                                final bloc = BlocProvider.of<AuthenticationBloc>(context);
+                                bloc.add(RegisterEvent(firstName.text, lastName.text,
+                                    email.text,
+                                    password.text,context,_scaffoldKey));
+                              } else {
+                                actionSnackBar("the passwords doesn't match");
+                              }
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -163,11 +236,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             )),
                       ),
+                      BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                        builder: (context, state) {
+                          if (state is InitialAuthenticationState) {
+                            return Container();
+                          } else if (state is RegisterState) {
+                            return Container();
+                          }
+                          return Container();
+                        },
+                      ),
                       SizedBox(
                         height: 15.0,
                       ),
                       Container(
-                        margin: EdgeInsets.only(left: 24,bottom: 10),
+                        margin: EdgeInsets.only(left: 24, bottom: 10),
                         child: InkWell(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -187,14 +270,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xff38003D)),
                               ),
-
                             ],
                           ),
                           onTap: () {
-                            Navigator.of(context).pushReplacementNamed(LoginScreen.id);
+                            Navigator.of(context)
+                                .pushReplacementNamed(LoginScreen.id);
                           },
+                        ),
                       ),
-              ),
                       Container(
                         margin: EdgeInsets.only(top: 30),
                         child: Row(
@@ -226,7 +309,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           children: <Widget>[
                             Container(
                               height: 50,
-                              width: MediaQuery.of(context).size.width/4,
+                              width: MediaQuery.of(context).size.width / 4,
                               child: InkWell(
                                   borderRadius: BorderRadius.circular(20),
                                   onTap: () {},
@@ -238,24 +321,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         ),
                                         color: Color(0xff395185)),
                                     child: Center(
-                                      child: Icon(FontAwesomeIcons.facebookF,
-                                      color:  Color(0xffFFFFFF),
-                                      size: 30,)
-
-                                    ),
+                                        child: Icon(
+                                      FontAwesomeIcons.facebookF,
+                                      color: Color(0xffFFFFFF),
+                                      size: 30,
+                                    )),
                                   )),
                             ),
-                            SizedBox(width: 30,),
+                            SizedBox(
+                              width: 30,
+                            ),
                             Container(
 //                      margin: EdgeInsets.only(top: 30, left: 20, right: 20),
 
                               height: 50,
-                              width: MediaQuery.of(context).size.width/4,
+                              width: MediaQuery.of(context).size.width / 4,
                               child: InkWell(
                                   borderRadius: BorderRadius.circular(20),
-                                  onTap: () {
-
-                                  },
+                                  onTap: () {},
                                   child: Container(
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(20),
@@ -264,11 +347,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         ),
                                         color: Color(0xffD94C4C)),
                                     child: Center(
-                                        child: Icon(FontAwesomeIcons.google,
-                                          color:  Color(0xffFFFFFF),
-                                          size: 30,)
-
-                                    ),
+                                        child: Icon(
+                                      FontAwesomeIcons.google,
+                                      color: Color(0xffFFFFFF),
+                                      size: 30,
+                                    )),
                                   )),
                             ),
                           ],
@@ -277,7 +360,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ],
                   ),
                 ),
-
               ],
             ),
           ),

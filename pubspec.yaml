@@ -28,6 +28,11 @@ dependencies:
   auto_size_text: ^2.1.0
   flutter_svg:
   flutter_circular_chart: ^0.1.0
+  flutter_bloc: ^3.2.0
+  http: ^0.12.0+4
+  equatable: ^1.1.1
+  xs_progress_hud: ^1.0.2
+
 
 dev_dependencies:
   flutter_test:
