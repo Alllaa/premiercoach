@@ -29,6 +29,15 @@ class AuthenticationBloc
         print(e.toString());
         yield AuthError(e.toString());
       }
-    }
+    }else if(event is LoginEvent)
+      {
+        try {
+          final String result = await authRepository.login(event.email, event.password,event.context,event.scaffoldKey);
+          yield LoginState(result);
+        } catch(e){
+          print(e.toString());
+          yield AuthError(e.toString());
+        }
+      }
   }
 }

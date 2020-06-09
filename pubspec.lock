@@ -43,6 +43,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  buffer:
+    dependency: transitive
+    description:
+      name: buffer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.6"
   charcode:
     dependency: transitive
     description:
@@ -85,6 +92,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
+  executor:
+    dependency: transitive
+    description:
+      name: executor
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -137,6 +151,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.1"
+  http_client:
+    dependency: "direct main"
+    description:
+      name: http_client
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.4.0"
   http_parser:
     dependency: transitive
     description:
@@ -304,5 +325,5 @@ packages:
     source: hosted
     version: "1.0.2"
 sdks:
-  dart: ">=2.6.0 <3.0.0"
+  dart: ">=2.7.0 <3.0.0"
   flutter: ">=1.12.1 <2.0.0"

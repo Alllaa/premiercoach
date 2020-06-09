@@ -13,6 +13,7 @@ class InitialAuthenticationState extends AuthenticationState {
   // TODO: implement props
   List<Object> get props => null;
 }
+
 class RegisterState extends AuthenticationState
 {
   final String result;
@@ -22,7 +23,15 @@ class RegisterState extends AuthenticationState
   // TODO: implement props
   List<Object> get props => [result];
 }
+class LoginState extends AuthenticationState
+{
+  final String result;
+  const LoginState(this.result);
 
+  @override
+  // TODO: implement props
+  List<Object> get props => [result];
+}
 class AuthError extends AuthenticationState {
   final String message;
 

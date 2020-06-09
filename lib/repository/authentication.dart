@@ -13,62 +13,103 @@ import '../HomeUI/HomePage.dart';
 import '../HomeUI/HomePage.dart';
 
 abstract class AuthRepository {
-  Future<String> registeration(String firstName,String lastName, String email,String password,BuildContext context,GlobalKey<ScaffoldState> _scaffoldKey);
+  Future<String> registeration(String firstName, String lastName, String email,
+      String password, BuildContext context,
+      GlobalKey<ScaffoldState> _scaffoldKey);
+
+  Future<String> login(String email, String password, BuildContext context,
+      GlobalKey<ScaffoldState> _scaffoldKey);
+
 }
 
-class AuthApi implements AuthRepository{
+class AuthApi implements AuthRepository {
 
   Client client = Client();
   final urlRegister = "https://footballcoach.herokuapp.com/authenticate/signup";
-  @override
-  Future<String> registeration(String firstName, String lastName, String email, String password , BuildContext context,GlobalKey<ScaffoldState> _scaffoldKey) async{
+  final urlLogin = "https://footballcoach.herokuapp.com/authenticate/login";
 
+  @override
+  Future<String> registeration(String firstName, String lastName, String email,
+      String password, BuildContext context,
+      GlobalKey<ScaffoldState> _scaffoldKey) async {
     XsProgressHud.show(context);
 
-   try{
-     final response = await client.post(urlRegister,body:{
+    try {
+      final response = await client.post(urlRegister, body: {
 
-       "firstname": firstName,
-       "lastname": lastName,
-       "password": password,
-       "email": email
-     });
-     if (json.decode(response.body)['token'] != "Forbidden")
-     {
-
-       XsProgressHud.hide();
-       print(json.decode(response.body));
-       AppClass.token = json.decode(response.body)['token'];
-       Navigator.pushReplacement(
-         context,
-         MaterialPageRoute(builder: (context) => HomePage()),
-       );
-
-     }
-     else
-     {
-       XsProgressHud.hide();
-       final snackBar  = SnackBar(
-         backgroundColor: Colors.red,
-         duration: Duration(seconds: 2),
-         content: Text("Email is already exist"),
-       );
-       _scaffoldKey.currentState.showSnackBar(snackBar);
-       print(json.decode(response.body)['token']);
-     }
-     return json.decode(response.body)['token'];
-   }catch (e)
-    {
+        "firstname": firstName,
+        "lastname": lastName,
+        "password": password,
+        "email": email
+      });
+      if (json.decode(response.body)['token'] != "Forbidden") {
+        XsProgressHud.hide();
+        print(json.decode(response.body));
+        AppClass.token = json.decode(response.body)['token'];
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      }
+      else {
+        XsProgressHud.hide();
+        final snackBar = SnackBar(
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+          content: Text("Email is already exist"),
+        );
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+        print(json.decode(response.body)['token']);
+      }
+      return json.decode(response.body)['token'];
+    } catch (e) {
       XsProgressHud.hide();
-      final snackBar  = SnackBar(
-        backgroundColor: Colors.red,
-        duration: Duration(seconds: 2),
-        content: Text(e.toString())
+      final snackBar = SnackBar(
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+          content: Text(e.toString())
       );
       _scaffoldKey.currentState.showSnackBar(snackBar);
     }
-
-
   }
 
+  @override
+  Future<String> login(String email, String password, BuildContext context, GlobalKey<ScaffoldState> _scaffoldKey) async {
+    XsProgressHud.show(context);
+    try {
+      final response = await client.post(urlLogin, body: {
+
+        "password": password,
+        "email": email
+      });
+      if (json.decode(response.body)['token'] != "Forbidden") {
+        XsProgressHud.hide();
+        print(json.decode(response.body));
+        AppClass.token = json.decode(response.body)['token'];
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      }
+      else {
+        XsProgressHud.hide();
+        final snackBar = SnackBar(
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+          content: Text("wrong password or email"),
+        );
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+        print(json.decode(response.body)['token']);
+      }
+      return json.decode(response.body)['token'];
+    } catch (e) {
+      XsProgressHud.hide();
+      final snackBar = SnackBar(
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+          content: Text(e.toString())
+      );
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    }
+  }
 }

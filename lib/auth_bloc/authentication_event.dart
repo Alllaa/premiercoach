@@ -15,9 +15,19 @@ class RegisterEvent extends AuthenticationEvent{
  final String firstName,lastName,email,password;
  final BuildContext context;
  final GlobalKey<ScaffoldState> scaffoldKey;
-  const RegisterEvent(this.firstName,this.lastName,this.email,this.password,this.context,this.scaffoldKey);
+ const RegisterEvent(this.firstName,this.lastName,this.email,this.password,this.context,this.scaffoldKey);
 
-  @override
-  // TODO: implement props
-  List<Object> get props => [firstName,lastName,email,password,context,scaffoldKey];
+ @override
+ // TODO: implement props
+ List<Object> get props => [firstName,lastName,email,password,context,scaffoldKey];
+}
+class LoginEvent extends AuthenticationEvent{
+ final String email,password;
+ final BuildContext context;
+ final GlobalKey<ScaffoldState> scaffoldKey;
+ const LoginEvent(this.email,this.password,this.context,this.scaffoldKey);
+
+ @override
+ // TODO: implement props
+ List<Object> get props => [email,password,context,scaffoldKey];
 }

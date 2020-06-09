@@ -21,12 +21,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     FlutterStatusbarcolor.setStatusBarColor(Color(0xff05F0FF));
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AuthenticationBloc>(
-          create: (context) => AuthenticationBloc(AuthApi()),
-        ),
-      ],
+    return BlocProvider(
+      create: (BuildContext context)=>  AuthenticationBloc(AuthApi()),
       child: Registeration(),
     );
   }
@@ -63,94 +59,7 @@ class _RegisterationState extends State<Registeration> {
     );
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
-  validateData(){
-    if(firstName.text.isEmpty){
-      setState(() {
-        firstNameColor = Colors.red;
-        firstNameEntered = false;
-      });
-    }else{
-      setState(() {
-        firstNameColor = Colors.grey.withOpacity(.5);
-        firstNameEntered = true;
-      });
-    }
 
-    if(lastName.text.isEmpty){
-      setState(() {
-        lastNameColor = Colors.red;
-        lastNameEntered = false;
-      });
-    }else{
-      setState(() {
-        lastNameColor = Colors.black.withOpacity(.3);
-        lastNameEntered = true;
-      });
-    }
-
-    if(firstName.text.isEmpty){
-      setState(() {
-        firstNameColor = Colors.red;
-        firstNameEntered = false;
-      });
-    }else{
-      setState(() {
-        firstNameColor = Colors.black.withOpacity(.3);
-        firstNameEntered = true;
-      });
-    }
-
-    if(email.text.isEmpty){
-      setState(() {
-        emailColor = Colors.red;
-        emailEntered = false;
-      });
-    }else{
-      setState(() {
-        emailColor = Colors.black.withOpacity(.3);
-        emailEntered = true;
-      });
-    }
-
-    if(password.text.isEmpty){
-      setState(() {
-        passwordColor = Colors.red;
-        passwordEntered = false;
-      });
-    }else{
-      setState(() {
-        passwordColor = Colors.black.withOpacity(.3);
-        passwordEntered = true;
-      });
-    }
-
-    if(confirmPassword.text.isEmpty){
-      setState(() {
-        confirmPasswordColor = Colors.red;
-        confirmPasswordEntered = false;
-      });
-    }else{
-      setState(() {
-        confirmPasswordColor = Colors.black.withOpacity(.3);
-        confirmPasswordEntered = true;
-      });
-    }
-    if(confirmPasswordEntered && firstNameEntered && lastNameEntered && emailEntered && passwordEntered){
-      if (password.text == confirmPassword.text) {
-        final bloc = BlocProvider.of<AuthenticationBloc>(context);
-        bloc.add(RegisterEvent(firstName.text, lastName.text,
-            email.text,
-            password.text,context,_scaffoldKey));
-      } else {
-        actionSnackBar("the passwords doesn't match");
-        setState(() {
-          confirmPasswordColor = Colors.red;
-          confirmPasswordEntered = false;
-        });
-      }
-    }
-
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -364,6 +273,94 @@ class _RegisterationState extends State<Registeration> {
           ),
         ));
   }
+  validateData(){
+    if(firstName.text.isEmpty){
+      setState(() {
+        firstNameColor = Colors.red;
+        firstNameEntered = false;
+      });
+    }else{
+      setState(() {
+        firstNameColor = Colors.grey.withOpacity(.5);
+        firstNameEntered = true;
+      });
+    }
+
+    if(lastName.text.isEmpty){
+      setState(() {
+        lastNameColor = Colors.red;
+        lastNameEntered = false;
+      });
+    }else{
+      setState(() {
+        lastNameColor = Colors.black.withOpacity(.3);
+        lastNameEntered = true;
+      });
+    }
+
+    if(firstName.text.isEmpty){
+      setState(() {
+        firstNameColor = Colors.red;
+        firstNameEntered = false;
+      });
+    }else{
+      setState(() {
+        firstNameColor = Colors.black.withOpacity(.3);
+        firstNameEntered = true;
+      });
+    }
+
+    if(email.text.isEmpty){
+      setState(() {
+        emailColor = Colors.red;
+        emailEntered = false;
+      });
+    }else{
+      setState(() {
+        emailColor = Colors.black.withOpacity(.3);
+        emailEntered = true;
+      });
+    }
+
+    if(password.text.isEmpty){
+      setState(() {
+        passwordColor = Colors.red;
+        passwordEntered = false;
+      });
+    }else{
+      setState(() {
+        passwordColor = Colors.black.withOpacity(.3);
+        passwordEntered = true;
+      });
+    }
+
+    if(confirmPassword.text.isEmpty){
+      setState(() {
+        confirmPasswordColor = Colors.red;
+        confirmPasswordEntered = false;
+      });
+    }else{
+      setState(() {
+        confirmPasswordColor = Colors.black.withOpacity(.3);
+        confirmPasswordEntered = true;
+      });
+    }
+    if(confirmPasswordEntered && firstNameEntered && lastNameEntered && emailEntered && passwordEntered){
+      if (password.text == confirmPassword.text) {
+        final bloc = BlocProvider.of<AuthenticationBloc>(context);
+        bloc.add(RegisterEvent(firstName.text, lastName.text,
+            email.text,
+            password.text,context,_scaffoldKey));
+      } else {
+        actionSnackBar("the passwords doesn't match");
+        setState(() {
+          confirmPasswordColor = Colors.red;
+          confirmPasswordEntered = false;
+        });
+      }
+    }
+
+  }
   Widget firsNameCard(){
     return Container(
       padding: EdgeInsets.only(top: 3.0,bottom: 3.0,left: 6.0,right: 6.0),
@@ -427,7 +424,7 @@ class _RegisterationState extends State<Registeration> {
       child: TextField(
         onChanged: (text) {
           setState(() {
-            emailColor = Colors.black.withOpacity(.3);;
+            emailColor = Colors.black.withOpacity(.3);
             emailEntered = true;
           });
           print("First textfield $text");
@@ -438,7 +435,6 @@ class _RegisterationState extends State<Registeration> {
             prefixIcon: Icon(Icons.email),
             hintText: 'Email Address'),
         autofocus: false,
-
       ),
     );
   }
