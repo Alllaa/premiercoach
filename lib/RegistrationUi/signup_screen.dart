@@ -5,9 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:premiercoach/RegistrationUi/login_screen.dart';
-import 'package:premiercoach/auth_bloc/authentication_bloc.dart';
-import 'package:premiercoach/auth_bloc/authentication_event.dart';
-import 'package:premiercoach/auth_bloc/authentication_state.dart';
+import 'package:premiercoach/blocs/auth_bloc/authentication_bloc.dart';
+import 'package:premiercoach/blocs/auth_bloc/authentication_event.dart';
+import 'package:premiercoach/blocs/auth_bloc/authentication_state.dart';
 import 'package:premiercoach/repository/authentication.dart';
 
 class SignUpScreen extends StatefulWidget {

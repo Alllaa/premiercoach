@@ -1,32 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:premiercoach/HomeUI/DetailsPage.dart';
 import 'package:premiercoach/HomeUI/PredictWidget.dart';
 import 'package:premiercoach/HomeUI/TableWidget.dart';
-import 'package:premiercoach/UTILS/matches.dart' as prefix0;
+import 'package:premiercoach/RegistrationUi/login_screen.dart';
 import 'package:premiercoach/UTILS/matches.dart';
+import 'package:premiercoach/blocs/home_bloc/home_bloc_bloc.dart';
+import 'package:premiercoach/blocs/home_bloc/home_bloc_event.dart';
+import 'package:premiercoach/blocs/home_bloc/home_bloc_state.dart';
+import 'package:premiercoach/repository/home.dart';
+
 class HomePage extends StatefulWidget {
   static final String id = "home_page";
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (BuildContext context) => HomeBlocBloc(HomeApi()),
+      child: HomeMain(),
+    );
+  }
+}
+
+class HomeMain extends StatefulWidget {
+  @override
+  _HomeMainState createState() => _HomeMainState();
+}
+
+class _HomeMainState extends State<HomeMain> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
+
   Matches match = new Matches();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    final bloc = BlocProvider.of<HomeBlocBloc>(context);
+    bloc.add(InfoEvent());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     FlutterStatusbarcolor.setStatusBarColor(Color(0xff37003C));
-
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Color(0xff37003C),
@@ -34,33 +63,70 @@ class _HomePageState extends State<HomePage> {
         elevation: 2.0,
         backgroundColor: Color(0xff00FF87),
         leading: Container(
-          child: IconButton(icon: SvgPicture.asset("assets/images/menu_icon.svg",color: Color(0xff37003C),height: 30,width: 30,), onPressed: (){
-            _scaffoldKey.currentState.openDrawer();
-          }),
+          child: IconButton(
+              icon: SvgPicture.asset(
+                "assets/images/menu_icon.svg",
+                color: Color(0xff37003C),
+                height: 30,
+                width: 30,
+              ),
+              onPressed: () {
+                _scaffoldKey.currentState.openDrawer();
+              }),
         ),
+        actions: <Widget>[
+          Center(
+              child: Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: InkWell(
+              onTap: ()
+                {
+                  Navigator.pushReplacement(context,MaterialPageRoute(
+                    builder: (context) => LoginScreen(),
+                  ) );
+                },
+                child: Text(
+              "Sign out",
+              style: TextStyle(fontSize: 16, color: Color(0xff37003C)),
+            )),
+          ))
+        ],
       ),
       drawer: Drawer(
         elevation: 0.0,
-        child: drawerUI(),
+        child: BlocBuilder<HomeBlocBloc, HomeBlocState>(
+          builder: (context, state) {
+            if (state is InitialHomeBlocState) {
+              return drawerUI('user', 'user', 0);
+            } else if (state is InfoUser) {
+              print("Hi All there 45456adsa54d65sa");
+              return (drawerUI(
+                  state.user.firstName, state.user.lastName, state.user.score));
+            }
+            return Container();
+          },
+        ),
       ),
-      body: _selectedIndex == 0? homeWidget():_selectedIndex == 1? predictWidget(context):tableWidget(context),
+      body: _selectedIndex == 0
+          ? homeWidget()
+          : _selectedIndex == 1 ? predictWidget(context) : tableWidget(context),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color(0xff00FF87),
-          elevation: 5.0,
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              title: Text('Home'),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.brightness_5),
-              title: Text('Predict'),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.border_all),
-              title: Text('Table'),
-            ),
-          ],
+        elevation: 5.0,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('Home'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.brightness_5),
+            title: Text('Predict'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.border_all),
+            title: Text('Table'),
+          ),
+        ],
         currentIndex: _selectedIndex,
         unselectedItemColor: Color(0xff37003C),
         selectedItemColor: Color(0xffE90052),
@@ -68,7 +134,8 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  Widget drawerUI(){
+
+  Widget drawerUI(String firstName, String lastName, int score) {
     return SingleChildScrollView(
       child: Container(
         height: MediaQuery.of(context).size.height,
@@ -81,33 +148,36 @@ class _HomePageState extends State<HomePage> {
             ),
             Container(
                 child: InkWell(
-                  onTap: (){
-                    print("KKKKKK");
-                  },
-                  child: Stack(
-                    overflow: Overflow.visible,
-                    children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          border: Border.all(color: Color(0xff37003C)),
-                        ),
-                        child: Image.asset("assets/images/default.jpg",height: 100,width: 100,),
-                      ),
-                      Positioned(
-                        left: -12,
-                        child: Container(
-                          child: Icon(
-                            Icons.add_circle,
-                            color: Color(0xff37003C),
-                            size: 30.0,
-                          ),
-                        ),
-                      ),
-                    ],
+              onTap: () {
+                print("KKKKKK");
+              },
+              child: Stack(
+                overflow: Overflow.visible,
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      border: Border.all(color: Color(0xff37003C)),
+                    ),
+                    child: Image.asset(
+                      "assets/images/default.jpg",
+                      height: 100,
+                      width: 100,
+                    ),
                   ),
-                )
-            ),
+                  Positioned(
+                    left: -12,
+                    child: Container(
+                      child: Icon(
+                        Icons.add_circle,
+                        color: Color(0xff37003C),
+                        size: 30.0,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )),
             SizedBox(
               height: 10,
             ),
@@ -117,14 +187,23 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                    child: Text("Mahmoud Ahmed",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w400,fontSize: 18),),
+                    child: Text(
+                      "${firstName} ${lastName}",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 18),
+                    ),
                   ),
-
                   Container(
                     margin: EdgeInsets.only(left: 10.0),
                     child: InkWell(
                       child: Container(
-                        child: Icon(Icons.edit,size: 25,color: Color(0xff37003C),),
+                        child: Icon(
+                          Icons.edit,
+                          size: 25,
+                          color: Color(0xff37003C),
+                        ),
                       ),
                     ),
                   ),
@@ -135,7 +214,7 @@ class _HomePageState extends State<HomePage> {
               height: 25,
             ),
             Container(
-              margin: EdgeInsets.only(left: 5.0,right: 5.0),
+              margin: EdgeInsets.only(left: 5.0, right: 5.0),
               height: 1,
               width: MediaQuery.of(context).size.width,
               color: Colors.grey,
@@ -145,7 +224,13 @@ class _HomePageState extends State<HomePage> {
             ),
             Container(
               alignment: Alignment.center,
-              child: Text("Your Predict",style: TextStyle(color: Color(0xff37003C),fontSize: 18,fontWeight: FontWeight.w700),),
+              child: Text(
+                "Your Predict",
+                style: TextStyle(
+                    color: Color(0xff37003C),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700),
+              ),
             ),
             SizedBox(
               height: 10.0,
@@ -161,10 +246,20 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Container(
-                          child: Icon(Icons.check,color: Color(0xff1A73E8),size: 25.0,),
+                          child: Icon(
+                            Icons.check,
+                            color: Color(0xff1A73E8),
+                            size: 25.0,
+                          ),
                         ),
                         Container(
-                          child: Text("5",style: TextStyle(fontWeight: FontWeight.w300,fontSize: 15,color: Colors.black),),
+                          child: Text(
+                            "5",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w300,
+                                fontSize: 15,
+                                color: Colors.black),
+                          ),
                         ),
                       ],
                     ),
@@ -178,10 +273,20 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Container(
-                          child: Icon(Icons.clear,color: Color(0xffC73A34),size: 25.0,),
+                          child: Icon(
+                            Icons.clear,
+                            color: Color(0xffC73A34),
+                            size: 25.0,
+                          ),
                         ),
                         Container(
-                          child: Text("5",style: TextStyle(fontWeight: FontWeight.w300,fontSize: 15,color: Colors.black),),
+                          child: Text(
+                            "5",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w300,
+                                fontSize: 15,
+                                color: Colors.black),
+                          ),
                         ),
                       ],
                     ),
@@ -193,7 +298,7 @@ class _HomePageState extends State<HomePage> {
               height: 25,
             ),
             Container(
-              margin: EdgeInsets.only(left: 5.0,right: 5.0),
+              margin: EdgeInsets.only(left: 5.0, right: 5.0),
               height: 1,
               width: MediaQuery.of(context).size.width,
               color: Colors.grey,
@@ -207,8 +312,20 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Text("Your Rank:  ",style: TextStyle(color: Color(0xff37003C),fontSize: 18,fontWeight: FontWeight.w700),),
-                  Text("17th",style: TextStyle(color: Color(0xffC73A34),fontSize: 18,fontWeight: FontWeight.w700),),
+                  Text(
+                    "Your Rank:  ",
+                    style: TextStyle(
+                        color: Color(0xff37003C),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    "17th",
+                    style: TextStyle(
+                        color: Color(0xffC73A34),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700),
+                  ),
                 ],
               ),
             ),
@@ -218,7 +335,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget homeWidget(){
+  Widget homeWidget() {
     return SingleChildScrollView(
       child: Container(
         child: Column(
@@ -226,10 +343,13 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
-              color:  Color(0xff00FF87),
+              color: Color(0xff00FF87),
               width: MediaQuery.of(context).size.width,
               height: 105,
-              child: Image.asset("assets/images/cover.jpg",width: MediaQuery.of(context).size.width,),
+              child: Image.asset(
+                "assets/images/cover.jpg",
+                width: MediaQuery.of(context).size.width,
+              ),
             ),
             SizedBox(
               height: 25.0,
@@ -239,8 +359,8 @@ class _HomePageState extends State<HomePage> {
               child: ListView.builder(
                 itemCount: 4,
                 shrinkWrap: true,
-                itemBuilder: (context,index){
-                  return match.matches(index, context, 1) ;
+                itemBuilder: (context, index) {
+                  return match.matches(index, context, 1);
                 },
               ),
             ),
@@ -249,7 +369,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-
-
 }

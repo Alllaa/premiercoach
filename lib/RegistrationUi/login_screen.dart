@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-import 'package:premiercoach/HomeUI/HomePage.dart';
 import 'package:premiercoach/RegistrationUi/signup_screen.dart';
-import 'package:premiercoach/auth_bloc/authentication_bloc.dart';
-import 'package:premiercoach/auth_bloc/authentication_event.dart';
+import 'package:premiercoach/blocs/auth_bloc/authentication_bloc.dart';
+import 'package:premiercoach/blocs/auth_bloc/authentication_event.dart';
 import 'package:premiercoach/repository/authentication.dart';
 
 class LoginScreen extends StatefulWidget {

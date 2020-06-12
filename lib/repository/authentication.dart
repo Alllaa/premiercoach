@@ -2,14 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart';
 import 'package:premiercoach/app_class.dart';
-import 'package:premiercoach/auth_bloc/authentication_bloc.dart';
 import 'package:xs_progress_hud/xs_progress_hud.dart';
 
-import '../HomeUI/HomePage.dart';
-import '../HomeUI/HomePage.dart';
 import '../HomeUI/HomePage.dart';
 
 abstract class AuthRepository {
@@ -46,6 +42,7 @@ class AuthApi implements AuthRepository {
         XsProgressHud.hide();
         print(json.decode(response.body));
         AppClass.token = json.decode(response.body)['token'];
+        AppClass.nameSaver(AppClass.token);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
@@ -86,6 +83,7 @@ class AuthApi implements AuthRepository {
         XsProgressHud.hide();
         print(json.decode(response.body));
         AppClass.token = json.decode(response.body)['token'];
+        AppClass.nameSaver(AppClass.token);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),

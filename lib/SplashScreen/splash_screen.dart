@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:premiercoach/HomeUI/HomePage.dart';
 import 'package:premiercoach/RegistrationUi/login_screen.dart';
+import 'package:premiercoach/app_class.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -23,7 +26,14 @@ class _SplashScreenState extends State<SplashScreen> {
   }
   onDoneFinishTime()async
   {
-    Navigator.of(context).pushReplacementNamed(LoginScreen.id);
+    if(AppClass.haveToken)
+      {
+        Navigator.of(context).pushReplacementNamed(HomePage.id);
+
+      }else
+        {
+          Navigator.of(context).pushReplacementNamed(LoginScreen.id);
+        }
 
   }
   @override
