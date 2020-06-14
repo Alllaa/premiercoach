@@ -9,7 +9,11 @@ import 'package:premiercoach/UTILS/matches.dart';
 import 'package:premiercoach/blocs/home_bloc/home_bloc_bloc.dart';
 import 'package:premiercoach/blocs/home_bloc/home_bloc_event.dart';
 import 'package:premiercoach/blocs/home_bloc/home_bloc_state.dart';
+import 'package:premiercoach/model/fixturesMatches.dart';
+import 'package:premiercoach/model/teamRanking.dart';
 import 'package:premiercoach/repository/home.dart';
+
+import 'StandingTable.dart';
 
 class HomePage extends StatefulWidget {
   static final String id = "home_page";
@@ -42,14 +46,27 @@ class _HomeMainState extends State<HomeMain> {
       _selectedIndex = index;
     });
   }
-
+  MatchInfoModel matches = new MatchInfoModel();
   Matches match = new Matches();
-
+  List<Tabloue> table = new List();
+  getTable(){
+    final stBloc = BlocProvider.of<HomeBlocBloc>(context);
+    stBloc.add(GetStanding());
+  }
+  getMatches(){
+    final matchBloc = BlocProvider.of<HomeBlocBloc>(context);
+    matchBloc.add(MatchEvent());
+  }
+  getUserInfo(){
+    final bloc = BlocProvider.of<HomeBlocBloc>(context);
+    bloc.add(InfoEvent());
+  }
   @override
   void initState() {
     // TODO: implement initState
-    final bloc = BlocProvider.of<HomeBlocBloc>(context);
-    bloc.add(InfoEvent());
+//    getUserInfo();
+//    getMatches();
+    getTable();
     super.initState();
   }
 
@@ -107,9 +124,10 @@ class _HomeMainState extends State<HomeMain> {
           },
         ),
       ),
-      body: _selectedIndex == 0
+      body:
+      _selectedIndex == 0
           ? homeWidget()
-          : _selectedIndex == 1 ? predictWidget(context) : tableWidget(context),
+          : _selectedIndex == 1 ? predictWidget(context,matches.data) : _selectedIndex == 2 ?tableWidget(context):StandingTabloue(table),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color(0xff00FF87),
         elevation: 5.0,
@@ -124,6 +142,10 @@ class _HomeMainState extends State<HomeMain> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.border_all),
+            title: Text('Table'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.toys),
             title: Text('Table'),
           ),
         ],
@@ -342,6 +364,19 @@ class _HomeMainState extends State<HomeMain> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            BlocBuilder<HomeBlocBloc, HomeBlocState>(
+              builder: (context, state) {
+                if (state is InitialHomeBlocState) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is StandingLoaded) {
+                  table = state.pl_standing;
+                  return Container();
+                }
+                return Container();
+              },
+            ),
             Container(
               color: Color(0xff00FF87),
               width: MediaQuery.of(context).size.width,
@@ -354,16 +389,24 @@ class _HomeMainState extends State<HomeMain> {
             SizedBox(
               height: 25.0,
             ),
-            Container(
-              height: MediaQuery.of(context).size.height,
-              child: ListView.builder(
-                itemCount: 4,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return match.matches(index, context, 1);
-                },
-              ),
+            BlocBuilder<HomeBlocBloc, HomeBlocState>(
+              builder: (context, state) {
+                if (state is InitialHomeBlocState) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is MatchInfoState) {
+                  print("Hi All there 45456adsa54d65sa");
+                  matches = state.match;
+                  return Container(
+                    height: MediaQuery.of(context).size.height,
+                    child: match.matches(state.match.data, 1, context,false)
+                  );
+                }
+                return Container();
+              },
             ),
+
           ],
         ),
       ),

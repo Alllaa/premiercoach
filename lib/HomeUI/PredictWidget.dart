@@ -1,8 +1,10 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:premiercoach/UTILS/matches.dart';
+import 'package:premiercoach/model/fixturesMatches.dart';
 
-Widget predictWidget(BuildContext contx){
+Widget predictWidget(BuildContext contx,Match model){
+
   Matches matches = new Matches();
   return SingleChildScrollView(
     child: Padding(
@@ -23,13 +25,7 @@ Widget predictWidget(BuildContext contx){
             ),
             Container(
               height: MediaQuery.of(contx).size.height,
-              child: ListView.builder(
-                  itemCount: 4,
-                  shrinkWrap: true,
-                  itemBuilder: (context,index){
-                    return matches.matches(index,context,2);
-                  }
-              ) ,
+              child: matches.matches(model,2,contx,true),
             )
           ],
         ),

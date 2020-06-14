@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:premiercoach/model/fixturesMatches.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title, description, buttonText;
   final Image image;
-
-  const CustomDialog(
-      {Key key, this.title, this.description, this.buttonText, this.image});
+  final Fixtures fixtures;
+  const CustomDialog({Key key, this.title, this.description, this.buttonText, this.image,this.fixtures});
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +65,19 @@ class CustomDialog extends StatelessWidget {
                   children: <Widget>[
                     Container(
                       alignment: Alignment.topLeft,
-                      child: Image.asset("assets/images/manu.png"),
+                      child: Image.asset(
+                          "assets/logo/${fixtures.homeId}.png",
+                        width: 50.0,
+                        height: 50.0,
+                      ),
                     ),
                     Container(
                       alignment: Alignment.topRight,
-                      child: Image.asset("assets/images/manu.png"),
+                      child: Image.asset(
+                          "assets/logo/${fixtures.awayId}.png",
+                        width: 50.0,
+                          height: 50.0,
+                      ),
                     ),
                   ],
                 ),

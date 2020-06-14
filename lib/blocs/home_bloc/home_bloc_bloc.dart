@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:premiercoach/model/fixturesMatches.dart';
 import 'package:premiercoach/model/user.dart';
 import 'package:premiercoach/repository/home.dart';
 
@@ -26,6 +27,18 @@ class HomeBlocBloc extends Bloc<HomeBlocEvent, HomeBlocState> {
         print(e.toString());
         yield AuthError(e.toString());
       }
+    }else if(event is MatchEvent){
+     try{
+       final MatchInfoModel match = await homeRepository.matchesInfo();
+       yield MatchInfoState(match);
+     }catch(e){
+       print(e.toString());
+       yield AuthError(e.toString());
+     }
+    }else if (event is GetStanding) {
+       final tabloue = await homeRepository.getTabloue();
+      print(tabloue);
+      yield StandingLoaded(tabloue);
     }
   }
 }

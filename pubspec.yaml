@@ -33,6 +33,7 @@ dependencies:
   equatable: ^1.1.1
   xs_progress_hud: ^1.0.2
   http_client: ^1.4.0
+  dio: ^3.0.9
   shared_preferences: ^0.5.6+3
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,26 @@ flutter:
     - assets/images/avatar.png
     - assets/images/default.jpg
     - assets/images/cover.jpg
+    - assets/logo/1.png
+    - assets/logo/2.png
+    - assets/logo/3.png
+    - assets/logo/4.png
+    - assets/logo/6.png
+    - assets/logo/7.png
+    - assets/logo/8.png
+    - assets/logo/9.png
+    - assets/logo/11.png
+    - assets/logo/12.png
+    - assets/logo/14.png
+    - assets/logo/15.png
+    - assets/logo/17.png
+    - assets/logo/18.png
+    - assets/logo/19.png
+    - assets/logo/20.png
+    - assets/logo/281.png
+    - assets/logo/492.png
+    - assets/logo/495.png
+    - assets/logo/497.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
