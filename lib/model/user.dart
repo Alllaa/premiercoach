@@ -1,4 +1,6 @@
 class User{
+
+
   String firstName,lastName,urlImage,correct,wrong;
   int score;
   User.fromJson(Map<String, dynamic> parsedJson)
@@ -10,4 +12,5 @@ class User{
     correct = parsedJson['correct'].toString();
     wrong = parsedJson['wrong'].toString();
   }
+  User({this.firstName, this.lastName,this.urlImage,this.correct,this.wrong});
 }

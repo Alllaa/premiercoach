@@ -6,11 +6,16 @@ import 'package:premiercoach/HomeUI/PredictWidget.dart';
 import 'package:premiercoach/HomeUI/TableWidget.dart';
 import 'package:premiercoach/RegistrationUi/login_screen.dart';
 import 'package:premiercoach/UTILS/matches.dart';
+import 'package:premiercoach/blocs/auth_bloc/authentication_bloc.dart';
+import 'package:premiercoach/blocs/auth_bloc/authentication_event.dart';
+import 'package:premiercoach/blocs/auth_bloc/authentication_state.dart';
 import 'package:premiercoach/blocs/home_bloc/home_bloc_bloc.dart';
 import 'package:premiercoach/blocs/home_bloc/home_bloc_event.dart';
 import 'package:premiercoach/blocs/home_bloc/home_bloc_state.dart';
 import 'package:premiercoach/model/fixturesMatches.dart';
 import 'package:premiercoach/model/teamRanking.dart';
+import 'package:premiercoach/model/user.dart';
+import 'package:premiercoach/repository/authentication.dart';
 import 'package:premiercoach/repository/home.dart';
 
 import 'StandingTable.dart';
@@ -25,8 +30,15 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (BuildContext context) => HomeBlocBloc(HomeApi()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider <HomeBlocBloc>(
+          create: (context) => HomeBlocBloc(HomeApi()),
+        ),
+        BlocProvider<AuthenticationBloc>(
+          create: (context) => AuthenticationBloc(AuthApi()),
+        ),
+      ],
       child: HomeMain(),
     );
   }
@@ -48,28 +60,23 @@ class _HomeMainState extends State<HomeMain> {
   }
   MatchInfoModel matches = new MatchInfoModel();
   Matches match = new Matches();
-  List<Tabloue> table = new List();
-  getTable(){
-    final stBloc = BlocProvider.of<HomeBlocBloc>(context);
-    stBloc.add(GetStanding());
-  }
+
+
   getMatches(){
     final matchBloc = BlocProvider.of<HomeBlocBloc>(context);
     matchBloc.add(MatchEvent());
   }
   getUserInfo(){
-    final bloc = BlocProvider.of<HomeBlocBloc>(context);
+    final bloc = BlocProvider.of<AuthenticationBloc>(context);
     bloc.add(InfoEvent());
   }
   @override
   void initState() {
     // TODO: implement initState
-//    getUserInfo();
-//    getMatches();
-    getTable();
+    getUserInfo();
+    getMatches();
     super.initState();
   }
-
   @override
   Widget build(BuildContext context) {
     FlutterStatusbarcolor.setStatusBarColor(Color(0xff37003C));
@@ -111,14 +118,13 @@ class _HomeMainState extends State<HomeMain> {
       ),
       drawer: Drawer(
         elevation: 0.0,
-        child: BlocBuilder<HomeBlocBloc, HomeBlocState>(
+        child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           builder: (context, state) {
             if (state is InitialHomeBlocState) {
-              return drawerUI('user', 'user', 0);
+              return drawerUI('user', 'user', 0,"0","0");
             } else if (state is InfoUser) {
               print("Hi All there 45456adsa54d65sa");
-              return (drawerUI(
-                  state.user.firstName, state.user.lastName, state.user.score));
+              return (drawerUI(state.user.firstName, state.user.lastName, state.user.score,state.user.correct,state.user.wrong));
             }
             return Container();
           },
@@ -127,7 +133,7 @@ class _HomeMainState extends State<HomeMain> {
       body:
       _selectedIndex == 0
           ? homeWidget()
-          : _selectedIndex == 1 ? predictWidget(context,matches.data) : _selectedIndex == 2 ?tableWidget(context):StandingTabloue(table),
+          : _selectedIndex == 1 ? predictWidget(context,matches.data) : _selectedIndex == 2 ?tableWidget(context):StandingTabloue(),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color(0xff00FF87),
         elevation: 5.0,
@@ -157,7 +163,7 @@ class _HomeMainState extends State<HomeMain> {
     );
   }
 
-  Widget drawerUI(String firstName, String lastName, int score) {
+  Widget drawerUI(String firstName, String lastName, int score,String correct,String wrong) {
     return SingleChildScrollView(
       child: Container(
         height: MediaQuery.of(context).size.height,
@@ -276,7 +282,7 @@ class _HomeMainState extends State<HomeMain> {
                         ),
                         Container(
                           child: Text(
-                            "5",
+                            "${correct}",
                             style: TextStyle(
                                 fontWeight: FontWeight.w300,
                                 fontSize: 15,
@@ -303,7 +309,7 @@ class _HomeMainState extends State<HomeMain> {
                         ),
                         Container(
                           child: Text(
-                            "5",
+                            "${wrong}",
                             style: TextStyle(
                                 fontWeight: FontWeight.w300,
                                 fontSize: 15,
@@ -364,19 +370,7 @@ class _HomeMainState extends State<HomeMain> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            BlocBuilder<HomeBlocBloc, HomeBlocState>(
-              builder: (context, state) {
-                if (state is InitialHomeBlocState) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (state is StandingLoaded) {
-                  table = state.pl_standing;
-                  return Container();
-                }
-                return Container();
-              },
-            ),
+
             Container(
               color: Color(0xff00FF87),
               width: MediaQuery.of(context).size.width,

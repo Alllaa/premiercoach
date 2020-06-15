@@ -31,3 +31,9 @@ class LoginEvent extends AuthenticationEvent{
  // TODO: implement props
  List<Object> get props => [email,password,context,scaffoldKey];
 }
+class InfoEvent extends AuthenticationEvent {
+ const InfoEvent();
+ @override
+ // TODO: implement props
+ List<Object> get props => null;
+}

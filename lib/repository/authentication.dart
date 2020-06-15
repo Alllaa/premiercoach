@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:premiercoach/app_class.dart';
+import 'package:premiercoach/model/user.dart';
 import 'package:xs_progress_hud/xs_progress_hud.dart';
 
 import '../HomeUI/HomePage.dart';
@@ -15,7 +16,7 @@ abstract class AuthRepository {
 
   Future<String> login(String email, String password, BuildContext context,
       GlobalKey<ScaffoldState> _scaffoldKey);
-
+  Future<User> infoUser();
 }
 
 class AuthApi implements AuthRepository {
@@ -23,6 +24,7 @@ class AuthApi implements AuthRepository {
   Client client = Client();
   final urlRegister = "https://footballcoach.herokuapp.com/authenticate/signup";
   final urlLogin = "https://footballcoach.herokuapp.com/authenticate/login";
+  String urlInfo = "https://footballcoach.herokuapp.com/personal/info";
 
   @override
   Future<String> registeration(String firstName, String lastName, String email,
@@ -108,6 +110,24 @@ class AuthApi implements AuthRepository {
           content: Text(e.toString())
       );
       _scaffoldKey.currentState.showSnackBar(snackBar);
+    }
+  }
+
+  Future<User> infoUser() async {
+    try {
+      final response =
+      await client.get(urlInfo, headers: {
+        'token':AppClass.token
+      });
+      print(json.decode(response.body));
+      if (response.statusCode == 200) {
+        client.close();
+        return User.fromJson(json.decode(response.body));
+      }
+    } catch (e) {
+      client.close();
+      print(e.toString());
+      throw Exception('Failed to load info of user');
     }
   }
 }

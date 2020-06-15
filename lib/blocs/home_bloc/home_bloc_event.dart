@@ -6,12 +6,12 @@ abstract class HomeBlocEvent extends Equatable {
   const HomeBlocEvent();
  }
 
-class InfoEvent extends HomeBlocEvent {
-  const InfoEvent();
-  @override
-  // TODO: implement props
-  List<Object> get props => null;
-}
+//class InfoEvent extends HomeBlocEvent {
+//  const InfoEvent();
+//  @override
+//  // TODO: implement props
+//  List<Object> get props => null;
+//}
 
 class MatchEvent extends HomeBlocEvent {
   const MatchEvent();

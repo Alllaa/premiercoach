@@ -16,13 +16,6 @@ class InitialHomeBlocState extends HomeBlocState {
   List<Object> get props => null;
 }
 
-class InfoUser extends HomeBlocState{
-  final User user;
-  const InfoUser(this.user);
-  @override
-  // TODO: implement props
-  List<Object> get props => [user];
-}
 class MatchInfoState extends HomeBlocState{
   final MatchInfoModel match;
   const MatchInfoState(this.match);

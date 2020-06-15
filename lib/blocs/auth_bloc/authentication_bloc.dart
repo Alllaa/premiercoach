@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:premiercoach/model/user.dart';
 import 'package:premiercoach/repository/authentication.dart';
 
 import 'authentication_event.dart';
@@ -38,6 +39,14 @@ class AuthenticationBloc
           print(e.toString());
           yield AuthError(e.toString());
         }
+      }else if(event is InfoEvent){
+      try {
+        final User user = await authRepository.infoUser();
+        yield InfoUser(user);
+      } catch(e){
+        print(e.toString());
+        yield AuthError(e.toString());
       }
+    }
   }
 }

@@ -1,20 +1,49 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:premiercoach/blocs/home_bloc/home_bloc_bloc.dart';
+import 'package:premiercoach/blocs/home_bloc/home_bloc_event.dart';
+import 'package:premiercoach/blocs/home_bloc/home_bloc_state.dart';
 import 'package:premiercoach/model/teamRanking.dart';
+import 'package:premiercoach/repository/home.dart';
 
 class StandingTabloue extends StatefulWidget {
-  List<Tabloue> pl;
-  StandingTabloue(this.pl);
 
   @override
   _StandingTabloueState createState() => _StandingTabloueState();
 }
 
 class _StandingTabloueState extends State<StandingTabloue> {
-  List<String> userNames = ['Mahmoud',"Alaa","Abdo","3bs","Abdallah"];
-  List<String> userNumbers = ['1',"2","3","4","5"];
-  List<String> userPoints = ['25',"22","18","12","2"];
+
+
+  @override
+  Widget build(BuildContext context) {
+     return BlocProvider(
+      create: (BuildContext context) => HomeBlocBloc(HomeApi()),
+      child: TeamsTable(),
+    );
+  }
+
+}
+class TeamsTable extends StatefulWidget {
+
+  @override
+  _TeamsTableState createState() => _TeamsTableState();
+}
+
+class _TeamsTableState extends State<TeamsTable> {
+  getTable(){
+    final stBloc = BlocProvider.of<HomeBlocBloc>(context);
+    stBloc.add(GetStanding());
+  }
+  List<Tabloue> pl = new List();
+  @override
+  void initState() {
+    // TODO: implement initState
+    getTable();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,15 +51,40 @@ class _StandingTabloueState extends State<StandingTabloue> {
       body: OrientationBuilder(
           builder: (context, orientation){
             if(orientation == Orientation.portrait){
-              return tableView(false);
+              return  BlocBuilder<HomeBlocBloc, HomeBlocState>(
+                builder: (context, state) {
+                  if (state is InitialHomeBlocState) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is StandingLoaded) {
+                    pl = state.pl_standing;
+                    return tableView(false);
+                  }
+                  return Container();
+                },
+              );
             }else{
-              return tableView(true);
+              return BlocBuilder<HomeBlocBloc, HomeBlocState>(
+                builder: (context, state) {
+                  if (state is InitialHomeBlocState) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is StandingLoaded) {
+                    pl = state.pl_standing;
+                    return tableView(true);
+                  }
+                  return Container();
+                },
+              );
             }
 
           }
       ),
     );
   }
+
   Widget tableView(bool orientation){
     return Padding(
       padding: const EdgeInsets.all(10.0),
@@ -144,7 +198,7 @@ class _StandingTabloueState extends State<StandingTabloue> {
                       ListView.builder(
                           shrinkWrap: true,
                           physics: ClampingScrollPhysics(),
-                          itemCount: widget.pl.length,
+                          itemCount: pl.length,
                           itemBuilder: (context,index){
                             return Container(
                               child: Column(
@@ -158,18 +212,18 @@ class _StandingTabloueState extends State<StandingTabloue> {
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: <Widget>[
                                         Text(
-                                          '${widget.pl[index].rank}',
+                                          '${pl[index].rank}',
                                           style: TextStyle(color: Colors.white, fontSize: 20),
                                           textAlign: TextAlign.center,
                                         ),
                                         AutoSizeText(
-                                          '${widget.pl[index].name}',
+                                          '${pl[index].name}',
                                           style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
                                           maxLines: 2,
                                           textAlign: TextAlign.center,
                                         ),
                                         Text(
-                                          '${widget.pl[index].goalsScored}',
+                                          '${pl[index].goalsScored}',
                                           style: TextStyle(color: Colors.white, fontSize: 20),
                                           textAlign: TextAlign.center,
                                         ),
@@ -184,7 +238,7 @@ class _StandingTabloueState extends State<StandingTabloue> {
                                         Expanded(
                                           flex: 2,
                                           child: Text(
-                                            '${widget.pl[index].rank}',
+                                            '${pl[index].rank}',
                                             style: TextStyle(color: Colors.white, fontSize: 20),
                                             textAlign: TextAlign.center,
                                           ),
@@ -192,7 +246,7 @@ class _StandingTabloueState extends State<StandingTabloue> {
                                         Expanded(
                                           flex: 2,
                                           child: AutoSizeText(
-                                            '${widget.pl[index].name}',
+                                            '${pl[index].name}',
                                             style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
                                             maxLines: 2,
                                             textAlign: TextAlign.center,
@@ -201,7 +255,7 @@ class _StandingTabloueState extends State<StandingTabloue> {
                                         Expanded(
                                           flex: 2,
                                           child: Text(
-                                            '${widget.pl[index].goalsScored}',
+                                            '${pl[index].goalsScored}',
                                             style: TextStyle(color: Colors.white, fontSize: 20),
                                             textAlign: TextAlign.center,
                                           ),
@@ -209,7 +263,7 @@ class _StandingTabloueState extends State<StandingTabloue> {
                                         Expanded(
                                           flex: 2,
                                           child: Text(
-                                            '${widget.pl[index].goalDiff}',
+                                            '${pl[index].goalDiff}',
                                             style: TextStyle(color: Colors.white, fontSize: 20),
                                             textAlign: TextAlign.center,
                                           ),
@@ -217,7 +271,7 @@ class _StandingTabloueState extends State<StandingTabloue> {
                                         Expanded(
                                           flex: 2,
                                           child: Text(
-                                            '${widget.pl[index].goalsConceded}',
+                                            '${pl[index].goalsConceded}',
                                             style: TextStyle(color: Colors.white, fontSize: 20),
                                             textAlign: TextAlign.center,
                                           ),
@@ -225,7 +279,7 @@ class _StandingTabloueState extends State<StandingTabloue> {
                                         Expanded(
                                           flex: 2,
                                           child: Text(
-                                            '${widget.pl[index].won}',
+                                            '${pl[index].won}',
                                             style: TextStyle(color: Colors.white, fontSize: 20),
                                             textAlign: TextAlign.center,
                                           ),

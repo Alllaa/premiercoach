@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+import 'package:premiercoach/model/user.dart';
 
 @immutable
 abstract class AuthenticationState extends Equatable {
@@ -40,4 +41,12 @@ class AuthError extends AuthenticationState {
   @override
   // TODO: implement props
   List<Object> get props => [message];
+}
+
+class InfoUser extends AuthenticationState{
+  final User user;
+  const InfoUser(this.user);
+  @override
+  // TODO: implement props
+  List<Object> get props => [user];
 }
