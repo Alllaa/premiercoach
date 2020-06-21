@@ -26,3 +26,11 @@ class GetStanding extends HomeBlocEvent {
   // TODO: implement props
   List<Object> get props => null;
 }
+
+class GetBest extends HomeBlocEvent {
+  String teamName;
+  GetBest(this.teamName);
+  @override
+  // TODO: implement props
+  List<Object> get props => null;
+}

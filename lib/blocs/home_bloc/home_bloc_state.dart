@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:premiercoach/model/fixturesMatches.dart';
+import 'package:premiercoach/model/formationModel.dart';
 import 'package:premiercoach/model/teamRanking.dart';
 import 'package:premiercoach/model/user.dart';
 
@@ -37,6 +38,15 @@ class StandingLoaded extends HomeBlocState {
   final List<Tabloue> pl_standing;
 
   StandingLoaded(this.pl_standing) : super();
+
+  @override
+  // TODO: implement props
+  List<Object> get props => null;
+}
+class FormationLoaded extends HomeBlocState {
+  final Squad players;
+
+  FormationLoaded(this.players) : super();
 
   @override
   // TODO: implement props

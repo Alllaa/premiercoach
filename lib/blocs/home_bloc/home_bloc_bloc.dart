@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:premiercoach/model/fixturesMatches.dart';
 import 'package:premiercoach/model/user.dart';
@@ -40,6 +41,14 @@ class HomeBlocBloc extends Bloc<HomeBlocEvent, HomeBlocState> {
        final tabloue = await homeRepository.getTabloue();
       print(tabloue);
       yield StandingLoaded(tabloue);
-    }
+    }else if(event is GetBest){
+       try{
+         final players = await homeRepository.getFormation(event.teamName);
+         yield FormationLoaded(players);
+       }catch(e){
+         print(e.toString());
+         yield AuthError(e.toString());
+       }
+     }
   }
 }

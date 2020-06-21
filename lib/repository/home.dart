@@ -5,37 +5,39 @@ import 'package:dio/dio.dart';
 import 'package:http/http.dart';
 import 'package:premiercoach/app_class.dart';
 import 'package:premiercoach/model/fixturesMatches.dart';
+import 'package:premiercoach/model/formationModel.dart';
 import 'package:premiercoach/model/teamRanking.dart';
 import 'package:premiercoach/model/user.dart';
 
 abstract class HomeRepository {
-  Future<User> infoUser();
+//  Future<User> infoUser();
   Future<MatchInfoModel> matchesInfo();
   Future<List<Tabloue>> getTabloue();
+  Future<Squad> getFormation(String team_name);
 }
 
 class HomeApi implements HomeRepository {
   Client client = Client();
   String urlInfo = "https://footballcoach.herokuapp.com/personal/info";
   Dio dio = new Dio();
-  @override
-  Future<User> infoUser() async {
-    try {
-      final response =
-          await client.get(urlInfo, headers: {
-            'token':AppClass.token
-          });
-      print(json.decode(response.body));
-      if (response.statusCode == 200) {
-        client.close();
-        return User.fromJson(json.decode(response.body));
-      }
-    } catch (e) {
-      client.close();
-      print(e.toString());
-      throw Exception('Failed to load info of user');
-    }
-  }
+//  @override
+//  Future<User> infoUser() async {
+//    try {
+//      final response =
+//          await client.get(urlInfo, headers: {
+//            'token':AppClass.token
+//          });
+//      print(json.decode(response.body));
+//      if (response.statusCode == 200) {
+//        client.close();
+//        return User.fromJson(json.decode(response.body));
+//      }
+//    } catch (e) {
+//      client.close();
+//      print(e.toString());
+//      throw Exception('Failed to load info of user');
+//    }
+//  }
   @override
   Future<List<Tabloue>> getTabloue() async{
     try {
@@ -62,6 +64,21 @@ class HomeApi implements HomeRepository {
       }
     }catch(e){
       print("Error ${e}");
+    }
+  }
+  @override
+  Future<Squad> getFormation(String team_name) async{
+    String url='https://aifootballcoach.herokuapp.com/recommend?team=${team_name}';
+    try {
+      final response = await client.get(url);
+      print(response.body);
+      return Squad.fromJson(jsonDecode(response.body));
+    }
+    catch(e){
+      throw e;
+    }
+    finally {
+      client.close();
     }
   }
 }

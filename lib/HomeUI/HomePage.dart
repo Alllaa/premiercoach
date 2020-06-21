@@ -18,6 +18,7 @@ import 'package:premiercoach/model/user.dart';
 import 'package:premiercoach/repository/authentication.dart';
 import 'package:premiercoach/repository/home.dart';
 
+import 'PitchPage.dart';
 import 'StandingTable.dart';
 
 class HomePage extends StatefulWidget {
@@ -131,9 +132,8 @@ class _HomeMainState extends State<HomeMain> {
         ),
       ),
       body:
-      _selectedIndex == 0
-          ? homeWidget()
-          : _selectedIndex == 1 ? predictWidget(context,matches.data) : _selectedIndex == 2 ?tableWidget(context):StandingTabloue(),
+      _selectedIndex == 0 ? homeWidget() : _selectedIndex == 1 ? predictWidget(context,matches.data)
+          : _selectedIndex == 2 ?tableWidget(context) :_selectedIndex == 3 ?StandingTabloue():PitchPage() ,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color(0xff00FF87),
         elevation: 5.0,
@@ -153,6 +153,10 @@ class _HomeMainState extends State<HomeMain> {
           BottomNavigationBarItem(
             icon: Icon(Icons.toys),
             title: Text('Table'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.format_color_text),
+            title: Text('Formation'),
           ),
         ],
         currentIndex: _selectedIndex,
