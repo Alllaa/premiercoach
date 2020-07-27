@@ -207,11 +207,11 @@ class _LoginState extends State<Login> {
         onChanged: (text) {
           setState(() {
             passwordColor = Colors.black.withOpacity(.3);
-            ;
             passwordEntered = true;
           });
           print("First textfield $text");
         },
+        obscureText: true,
         controller: password,
         decoration: InputDecoration(
             border: InputBorder.none,

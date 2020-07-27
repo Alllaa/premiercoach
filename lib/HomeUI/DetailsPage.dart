@@ -1,16 +1,72 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
+import 'package:premiercoach/blocs/auth_bloc/authentication_bloc.dart';
+import 'package:premiercoach/blocs/statistics/stat_bloc.dart';
+import 'package:premiercoach/blocs/statistics/stat_event.dart';
+import 'package:premiercoach/blocs/statistics/stat_state.dart';
+import 'package:premiercoach/model/fixturesMatches.dart';
+import 'package:premiercoach/model/statistics_model.dart';
+import 'package:premiercoach/repository/home.dart';
+import 'package:premiercoach/repository/matches_statistics.dart';
+
+class DetailsPageBloc extends StatefulWidget {
+  String matchId;
+  Fixtures match;
+  DetailsPageBloc(this.matchId,this.match);
+  @override
+  _DetailsPageBlocState createState() => _DetailsPageBlocState();
+}
+
+class _DetailsPageBlocState extends State<DetailsPageBloc> {
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider <StatBloc>(
+          create: (context) => StatBloc(MatchStatistics()),
+        ),
+
+      ],
+      child: DetailsPage(widget.matchId,widget.match),
+    );
+  }
+}
+
+
 class DetailsPage extends StatefulWidget {
+  String matchId;
+  Fixtures match;
+  DetailsPage(this.matchId,this.match);
   @override
   _DetailsPageState createState() => _DetailsPageState();
 }
 
 class _DetailsPageState extends State<DetailsPage> {
-  String x1 = "40";
-  String x2 = "60";
-  final GlobalKey<AnimatedCircularChartState> _chartKey = new GlobalKey<AnimatedCircularChartState>();
+
+  Statistics matchStatistics;
+   final GlobalKey<AnimatedCircularChartState> _chartKey = new GlobalKey<AnimatedCircularChartState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  
+  String splitString(String event,int home_away){
+    return home_away == 0? event.split(":")[0] : event.split(":")[1];
+  }
+  
+  getMatchesStatistics(){
+    final bloc = BlocProvider.of<StatBloc>(context);
+    bloc.add(GetStatistics(widget.matchId));
+  }
+  
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("Here");
+    print("state ${matchStatistics == null}");
+    getMatchesStatistics();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,88 +76,101 @@ class _DetailsPageState extends State<DetailsPage> {
         elevation: 2.0,
         backgroundColor: Color(0xff00FF87),
         leading: Container(
-          child: IconButton(icon: SvgPicture.asset("assets/images/menu_icon.svg",color: Color(0xff37003C),height: 30,width: 30,), onPressed: (){
-            _scaffoldKey.currentState.openDrawer();
+          child: IconButton(icon: Icon(Icons.arrow_back,color: Color(0xff37003C),size: 25,),
+              onPressed: (){
+            Navigator.pop(context);
           }),
         ),
       ),
-      drawer: Drawer(
-        elevation: 0.0,
-        child: drawerUI(),
-      ),
+
       body: SingleChildScrollView(
         child: Container(
-          child: Column(
-            children: <Widget>[
-              //title
-              SizedBox(
-                height: 15.0,
-              ),
-              Container(
-                child: Text(
-                  "Details",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17.0,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              //last matches
-              SizedBox(
-                height: 20.0,
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 15.0,right: 15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+
+          child: BlocBuilder<StatBloc,StatState>(
+            builder: (context,state){
+              if(state is InitialHomeBlocState){
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }else if(state is StatisticsState){
+                matchStatistics = state.stat;
+                return Column(
                   children: <Widget>[
+                    //title
+                    SizedBox(
+                      height: 15.0,
+                    ),
                     Container(
                       child: Text(
-                        "Last 7 matches",
+                        "Details",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 17.0,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
+                    ),
+                    //last matches
+                    SizedBox(
+                      height: 20.0,
                     ),
                     Container(
-                      child: Text(
-                        "View details >",
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(.8),
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.w400,
-                        ),
+                      margin: EdgeInsets.only(left: 15.0,right: 15.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            child: Text(
+                              "Last 7 matches",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            child: Text(
+                              "View details >",
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(.8),
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    resultsDesign(),
+                    Container(
+                      height: 1.5,
+                      width: MediaQuery.of(context).size.width/2,
+                      color: Colors.white,
+                      margin: EdgeInsets.only(left: 20.0,right: 20.0),
+                    ),
+                    SizedBox(
+                      height: 15.0,
+                    ),
+                    predictionDesign(),
+                    Container(
+                      height: 1.5,
+                      width: MediaQuery.of(context).size.width/2,
+                      color: Colors.white,
+                      margin: EdgeInsets.only(left: 20.0,right: 20.0),
+                    ),
+                    SizedBox(
+                      height: 15.0,
+                    ),
+                    statisticsDesign(),
+
                   ],
-                ),
-              ),
-              resultsDesign(),
-              Container(
-                height: 1.5,
-                width: MediaQuery.of(context).size.width/2,
-                color: Colors.white,
-                margin: EdgeInsets.only(left: 20.0,right: 20.0),
-              ),
-              SizedBox(
-                height: 15.0,
-              ),
-              predictionDesign(),
-              Container(
-                height: 1.5,
-                width: MediaQuery.of(context).size.width/2,
-                color: Colors.white,
-                margin: EdgeInsets.only(left: 20.0,right: 20.0),
-              ),
-              SizedBox(
-                height: 15.0,
-              ),
-              statisticsDesign(),
-            ],
+                );
+              }
+              return Container();
+            },
+
           ),
         ),
       ),
@@ -122,7 +191,9 @@ class _DetailsPageState extends State<DetailsPage> {
               children: <Widget>[
                 Container(
                   child: Image.asset(
-                    "assets/images/manu.png",
+                    "assets/logo/${widget.match.homeId}.png",
+                    height: 40.0,
+                    width: 40.0,
                   ),
                 ),
                 Container(
@@ -220,7 +291,9 @@ class _DetailsPageState extends State<DetailsPage> {
                 ),
                 Container(
                   child: Image.asset(
-                    "assets/images/manu.png",
+                    "assets/logo/${widget.match.awayId}.png",
+                    height: 40.0,
+                    width: 40.0,
                   ),
                 ),
               ],
@@ -371,252 +444,49 @@ class _DetailsPageState extends State<DetailsPage> {
           possessionDesign(),
           Container(
             margin: EdgeInsets.only(right: 20.0,left: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: Text(
-                    '18',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    'Attempts',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    '15',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: attempts(),
           ),
           SizedBox(
             height: 10.0,
           ),
           Container(
             margin: EdgeInsets.only(right: 20.0,left: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: Text(
-                    '8',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    'Shots on Goal',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    '5',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: shotOnTarget(),
           ),
           SizedBox(
             height: 10.0,
           ),
           Container(
             margin: EdgeInsets.only(right: 20.0,left: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: Text(
-                    '4',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    'Free Kicks',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    '9',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: freeKicks(),
           ),
           SizedBox(
             height: 10.0,
           ),
           Container(
             margin: EdgeInsets.only(right: 20.0,left: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: Text(
-                    '6',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    'Corner Kicks',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    '4',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: cornerKicks(),
           ),
           SizedBox(
             height: 10.0,
           ),
           Container(
             margin: EdgeInsets.only(right: 20.0,left: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: Text(
-                    '2',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    'Offsides',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    '0',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: offSides(),
           ),
           SizedBox(
             height: 10.0,
           ),
           Container(
             margin: EdgeInsets.only(right: 20.0,left: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: Text(
-                    '3',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    'Yellow Cards',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    '2',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: yellowCards(),
+          ),
+          SizedBox(
+            height: 10.0,
+          ),
+          Container(
+            margin: EdgeInsets.only(right: 20.0,left: 20.0),
+            child: redCards(),
           ),
         ],
       ),
@@ -650,12 +520,12 @@ class _DetailsPageState extends State<DetailsPage> {
                       new CircularStackEntry(
                         <CircularSegmentEntry>[
                           new CircularSegmentEntry(
-                            40,
+                            double.parse(splitString(matchStatistics.data.possesion,0)),
                             Color(0xffE01922),
                             rankKey: 'completed',
                           ),
                           new CircularSegmentEntry(
-                            60,
+                            double.parse(splitString(matchStatistics.data.possesion,1)),
                             Color(0xff034694),
                             rankKey: 'remaining',
                           ),
@@ -665,7 +535,7 @@ class _DetailsPageState extends State<DetailsPage> {
                     ],
                     chartType: CircularChartType.Radial,
                     percentageValues: true,
-                    holeLabel: '60/40',
+                    holeLabel: '${splitString(matchStatistics.data.possesion,0)}/${splitString(matchStatistics.data.possesion,1)}',
                     labelStyle: new TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w400,
@@ -687,6 +557,272 @@ class _DetailsPageState extends State<DetailsPage> {
           ),
         ],
       ),
+    );
+  }
+  Widget attempts(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          child: Text(
+            '${splitString(matchStatistics.data.attemptsOnGoal,0)}',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            'Attempts',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            '${splitString(matchStatistics.data.attemptsOnGoal,1)}',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  Widget freeKicks(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          child: Text(
+            '${splitString(matchStatistics.data.freeKicks,0)}',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            'Free Kicks',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            '${splitString(matchStatistics.data.freeKicks,1)}',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  Widget cornerKicks(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          child: Text(
+            '${splitString(matchStatistics.data.corners,0)}',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            'Corner Kicks',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            '${splitString(matchStatistics.data.corners,1)}',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  Widget shotOnTarget(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          child: Text(
+            '${splitString(matchStatistics.data.shotsOnTarget,0)}',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            'Shots on Goal',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            '${splitString(matchStatistics.data.shotsOnTarget,1)}',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  Widget yellowCards(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          child: Text(
+            splitString(matchStatistics.data.yellowCards,0),
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            'Yellow Cards',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            splitString(matchStatistics.data.yellowCards,1),
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  Widget redCards(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          child: Text(
+            splitString(matchStatistics.data.redCards,0),
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            'Red Cards',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            splitString(matchStatistics.data.redCards,1),
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  Widget offSides(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          child: Text(
+            '${splitString(matchStatistics.data.offsides,0)}',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            'Offsides',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+        Container(
+          child: Text(
+            '${splitString(matchStatistics.data.offsides,1)}',
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white
+            ),
+          ),
+        ),
+      ],
     );
   }
   Widget drawerUI(){

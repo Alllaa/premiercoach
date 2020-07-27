@@ -101,25 +101,35 @@ class _TeamsTableState extends State<TeamsTable> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text(
-                            'Rank',
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                            textAlign: TextAlign.center,
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            margin: EdgeInsets.only(left: 50.0),
+                          Expanded(
+                            flex: 1,
                             child: Text(
-                              'Team',
+                              'Rank',
                               style: TextStyle(color: Colors.white, fontSize: 20),
                               textAlign: TextAlign.center,
                             ),
                           ),
-                          Text(
-                            'Goals scored',
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                            textAlign: TextAlign.center,
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              alignment: Alignment.center,
+
+                              child: Text(
+                                'Team',
+                                style: TextStyle(color: Colors.white, fontSize: 20),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                           ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              'Points',
+                              style: TextStyle(color: Colors.white, fontSize: 20),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+
                         ],
                       ),
                     ):Container(
@@ -148,6 +158,19 @@ class _TeamsTableState extends State<TeamsTable> {
                               ),
                             ),
                           ),
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              alignment: Alignment.center,
+//                              margin: EdgeInsets.only(left: 50.0),
+                              child: Text(
+                                'Points',
+                                style: TextStyle(color: Colors.white, fontSize: 20),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+
                           Expanded(
                             flex: 2,
                             child: Text(
@@ -211,21 +234,30 @@ class _TeamsTableState extends State<TeamsTable> {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: <Widget>[
-                                        Text(
-                                          '${pl[index].rank}',
-                                          style: TextStyle(color: Colors.white, fontSize: 20),
-                                          textAlign: TextAlign.center,
+                                        Expanded(
+                                          flex: 3,
+                                          child: Text(
+                                            '${pl[index].rank}',
+                                            style: TextStyle(color: Colors.white, fontSize: 20),
+                                            textAlign: TextAlign.center,
+                                          ),
                                         ),
-                                        AutoSizeText(
-                                          '${pl[index].name}',
-                                          style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
-                                          maxLines: 2,
-                                          textAlign: TextAlign.center,
+                                        Expanded(
+                                          flex: 3,
+                                          child: AutoSizeText(
+                                            '${pl[index].name}',
+                                            style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
+                                            maxLines: 2,
+                                            textAlign: TextAlign.center,
+                                          ),
                                         ),
-                                        Text(
-                                          '${pl[index].goalsScored}',
-                                          style: TextStyle(color: Colors.white, fontSize: 20),
-                                          textAlign: TextAlign.center,
+                                        Expanded(
+                                          flex: 3,
+                                          child: Text(
+                                            '${pl[index].points}',
+                                            style: TextStyle(color: Colors.white, fontSize: 20),
+                                            textAlign: TextAlign.center,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -247,6 +279,15 @@ class _TeamsTableState extends State<TeamsTable> {
                                           flex: 2,
                                           child: AutoSizeText(
                                             '${pl[index].name}',
+                                            style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
+                                            maxLines: 2,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: AutoSizeText(
+                                            '${pl[index].points}',
                                             style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
                                             maxLines: 2,
                                             textAlign: TextAlign.center,

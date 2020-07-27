@@ -20,15 +20,6 @@ class HomeBlocBloc extends Bloc<HomeBlocEvent, HomeBlocState> {
     HomeBlocEvent event,
   ) async* {
     yield InitialHomeBlocState();
-//    if(event is InfoEvent){
-//      try {
-//        final User user = await homeRepository.infoUser();
-//        yield InfoUser(user);
-//      } catch(e){
-//        print(e.toString());
-//        yield AuthError(e.toString());
-//      }
-//    }
      if(event is MatchEvent){
      try{
        final MatchInfoModel match = await homeRepository.matchesInfo();

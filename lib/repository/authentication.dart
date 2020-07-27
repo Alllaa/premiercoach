@@ -40,6 +40,7 @@ class AuthApi implements AuthRepository {
         "password": password,
         "email": email
       });
+      print("users ${json.decode(response.body)}");
       if (json.decode(response.body)['token'] != "Forbidden") {
         XsProgressHud.hide();
         print(json.decode(response.body));

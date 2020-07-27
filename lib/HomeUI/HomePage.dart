@@ -21,6 +21,9 @@ import 'package:premiercoach/repository/home.dart';
 import 'PitchPage.dart';
 import 'StandingTable.dart';
 
+
+
+
 class HomePage extends StatefulWidget {
   static final String id = "home_page";
 
@@ -395,11 +398,23 @@ class _HomeMainState extends State<HomeMain> {
                   );
                 } else if (state is MatchInfoState) {
                   print("Hi All there 45456adsa54d65sa");
-                  matches = state.match;
-                  return Container(
-                    height: MediaQuery.of(context).size.height,
-                    child: match.matches(state.match.data, 1, context,false)
-                  );
+                  if(state.match.data.fixtures.isEmpty){
+                    return Center(
+                      child: Text(
+                        "Empty",
+                        style: TextStyle(
+                            color: Colors.white
+                        ),
+                      ),
+                    );
+                  }else{
+                    matches = state.match;
+                    return Container(
+                        height: MediaQuery.of(context).size.height,
+                        child: match.matches(state.match.data, 1, context,false)
+                    );
+                  }
+
                 }
                 return Container();
               },

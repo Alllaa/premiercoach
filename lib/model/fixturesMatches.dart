@@ -21,7 +21,7 @@ class MatchInfoModel {
 
 class Match {
   List<Fixtures> fixtures;
-  String nextPage;
+  bool nextPage;
   bool prevPage;
 
   Match({this.fixtures, this.nextPage, this.prevPage});
