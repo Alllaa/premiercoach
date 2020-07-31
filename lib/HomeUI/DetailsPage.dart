@@ -3,13 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
 import 'package:premiercoach/blocs/auth_bloc/authentication_bloc.dart';
+import 'package:premiercoach/blocs/machine_bloc/machine_bloc.dart';
 import 'package:premiercoach/blocs/statistics/stat_bloc.dart';
 import 'package:premiercoach/blocs/statistics/stat_event.dart';
 import 'package:premiercoach/blocs/statistics/stat_state.dart';
 import 'package:premiercoach/model/fixturesMatches.dart';
+import 'package:premiercoach/model/machine_model.dart';
 import 'package:premiercoach/model/statistics_model.dart';
 import 'package:premiercoach/repository/home.dart';
 import 'package:premiercoach/repository/matches_statistics.dart';
+
+import '../blocs/statistics/stat_state.dart';
 
 class DetailsPageBloc extends StatefulWidget {
   String matchId;
@@ -26,6 +30,9 @@ class _DetailsPageBlocState extends State<DetailsPageBloc> {
       providers: [
         BlocProvider <StatBloc>(
           create: (context) => StatBloc(MatchStatistics()),
+        ),
+        BlocProvider <MachineBloc>(
+          create: (context) => MachineBloc(MatchStatistics()),
         ),
 
       ],
@@ -46,6 +53,7 @@ class DetailsPage extends StatefulWidget {
 class _DetailsPageState extends State<DetailsPage> {
 
   Statistics matchStatistics;
+  MachineModel machineModel;
    final GlobalKey<AnimatedCircularChartState> _chartKey = new GlobalKey<AnimatedCircularChartState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   
@@ -57,6 +65,10 @@ class _DetailsPageState extends State<DetailsPage> {
     final bloc = BlocProvider.of<StatBloc>(context);
     bloc.add(GetStatistics(widget.matchId));
   }
+  getMachinePredict(){
+    final bloc = BlocProvider.of<MachineBloc>(context);
+    bloc.add(EventMachinePredict(widget.match.homeName, widget.match.awayName));
+  }
   
   @override
   void initState() {
@@ -65,6 +77,8 @@ class _DetailsPageState extends State<DetailsPage> {
     print("Here");
     print("state ${matchStatistics == null}");
     getMatchesStatistics();
+
+    getMachinePredict();
   }
 
   @override
@@ -85,93 +99,114 @@ class _DetailsPageState extends State<DetailsPage> {
 
       body: SingleChildScrollView(
         child: Container(
-
-          child: BlocBuilder<StatBloc,StatState>(
-            builder: (context,state){
-              if(state is InitialHomeBlocState){
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }else if(state is StatisticsState){
-                matchStatistics = state.stat;
-                return Column(
+          child:Column(
+            children: <Widget>[
+              //title
+              SizedBox(
+                height: 15.0,
+              ),
+              Container(
+                child: Text(
+                  "Details",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 17.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              //last matches
+              SizedBox(
+                height: 20.0,
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 15.0,right: 15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    //title
-                    SizedBox(
-                      height: 15.0,
-                    ),
                     Container(
                       child: Text(
-                        "Details",
+                        "Last 7 matches",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 17.0,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ),
-                    //last matches
-                    SizedBox(
-                      height: 20.0,
-                    ),
                     Container(
-                      margin: EdgeInsets.only(left: 15.0,right: 15.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            child: Text(
-                              "Last 7 matches",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 17.0,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            child: Text(
-                              "View details >",
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(.8),
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        "View details >",
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(.8),
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ),
-                    resultsDesign(),
-                    Container(
-                      height: 1.5,
-                      width: MediaQuery.of(context).size.width/2,
-                      color: Colors.white,
-                      margin: EdgeInsets.only(left: 20.0,right: 20.0),
-                    ),
-                    SizedBox(
-                      height: 15.0,
-                    ),
-                    predictionDesign(),
-                    Container(
-                      height: 1.5,
-                      width: MediaQuery.of(context).size.width/2,
-                      color: Colors.white,
-                      margin: EdgeInsets.only(left: 20.0,right: 20.0),
-                    ),
-                    SizedBox(
-                      height: 15.0,
-                    ),
-                    statisticsDesign(),
-
                   ],
-                );
-              }
-              return Container();
-            },
+                ),
+              ),
+              resultsDesign(),
+              Container(
+                height: 1.5,
+                width: MediaQuery.of(context).size.width/2,
+                color: Colors.white,
+                margin: EdgeInsets.only(left: 20.0,right: 20.0),
+              ),
+              SizedBox(
+                height: 15.0,
+              ),
+              // Bloc D
+              BlocBuilder<MachineBloc,MachineState>(
+                builder: (context,state)
+                {
+                  if(state is MachineInitial) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }else if(state is PredictMachineState)
+                  {
+                    machineModel = state.machineModel;
+                    return predictionDesign();
+                  }
+                  else{
+                    return Container();
+                  }
+                },
+              ),
 
-          ),
+              Container(
+                height: 1.5,
+                width: MediaQuery.of(context).size.width/2,
+                color: Colors.white,
+                margin: EdgeInsets.only(left: 20.0,right: 20.0),
+              ),
+              SizedBox(
+                height: 15.0,
+              ),
+              BlocBuilder<StatBloc,StatState>(
+                builder: (context,state)
+                {
+                  if(state is InitialHomeBlocState) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }else if(state is StatisticsState)
+                    {
+                      matchStatistics = state.stat;
+                      return  statisticsDesign();
+                    }
+                  else{
+                    return Container();
+                  }
+                },
+              ),
+
+
+            ],
+          )
         ),
       ),
     );
@@ -323,6 +358,27 @@ class _DetailsPageState extends State<DetailsPage> {
           SizedBox(
             height: 10.0,
           ),
+          //HOME WIN
+          Container(
+            child: Text(
+              "predict score ${widget.match.homeName} wins ${machineModel.homeWinHomegoals} : ${machineModel.homeWinAwaygoals}",
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+                fontSize: 17,
+              ),
+            ),
+          ),
+          Container(
+            child: Text(
+              "probaility that  ${widget.match.homeName} wins is :",
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+                fontSize: 17,
+              ),
+            ),
+          ),
           Container(
             width: MediaQuery.of(context).size.width,
             margin: EdgeInsets.only(right: 20.0,left: 20.0),
@@ -340,22 +396,10 @@ class _DetailsPageState extends State<DetailsPage> {
                           topLeft: Radius.circular(40.0)
                       )
                   ),
-                  child: Container(
-                    margin: EdgeInsets.only(right: 30.0),
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      "30 %",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w300
-                      ),
-                    ),
-                  ),
                 ),
                 Container(
                   height: 50,
-                  width: MediaQuery.of(context).size.width/1.5,
+                  width: MediaQuery.of(context).size.width*(double.parse(machineModel.homeWinPercentage)/100),
                   decoration: BoxDecoration(
                       color: Color(0xffE01922),
                       borderRadius: BorderRadius.only(
@@ -366,7 +410,7 @@ class _DetailsPageState extends State<DetailsPage> {
                   child: Container(
                     alignment: Alignment.center,
                     child: Text(
-                      "70 %",
+                      "${double.parse(machineModel.homeWinPercentage.substring(0,3))} %",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 16.0,
@@ -378,9 +422,138 @@ class _DetailsPageState extends State<DetailsPage> {
               ],
             ),
           ),
-          SizedBox(
-            height: 20.0,
+          SizedBox(height: 20.0,),
+          //AWAY WIN
+          Container(
+            child: Text(
+              "predict score ${widget.match.awayName} wins ${machineModel.awayWinHomegoals} : ${machineModel.awayWinAwaygoals}",
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+                fontSize: 17,
+              ),
+            ),
           ),
+          Container(
+            child: Text(
+              "probaility that  ${widget.match.awayName} wins is :",
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+                fontSize: 17,
+              ),
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            margin: EdgeInsets.only(right: 20.0,left: 20.0),
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      color: Color(0xff034694),
+                      borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(40),
+                          topRight: Radius.circular(40.0),
+                          bottomLeft: Radius.circular(40.0),
+                          topLeft: Radius.circular(40.0)
+                      )
+                  ),
+                ),
+                Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width*(double.parse(machineModel.awayWinPercentage)/100),
+                  decoration: BoxDecoration(
+                      color: Color(0xffE01922),
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(40),
+                          topLeft: Radius.circular(40.0)
+                      )
+                  ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "${double.parse(machineModel.awayWinPercentage.substring(0,4))} %",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w300
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 20.0,),
+          //DRAW
+          Container(
+            child: Text(
+              "predict score draw ${machineModel.drawHomegoals} : ${machineModel.drawAwaygoals}",
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+                fontSize: 17,
+              ),
+            ),
+          ),
+          Container(
+            child: Text(
+              "probaility  draw :",
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+                fontSize: 17,
+              ),
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            margin: EdgeInsets.only(right: 20.0,left: 20.0),
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      color: Color(0xff034694),
+                      borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(40),
+                          topRight: Radius.circular(40.0),
+                          bottomLeft: Radius.circular(40.0),
+                          topLeft: Radius.circular(40.0)
+                      )
+                  ),
+                ),
+                Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width*(double.parse(machineModel.drawPercentage)/100),
+                  decoration: BoxDecoration(
+                      color: Color(0xffE01922),
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(40),
+                          topLeft: Radius.circular(40.0)
+                      )
+                  ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "${double.parse(machineModel.drawPercentage.substring(0,3))} %",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w300
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 20.0,),
+          //AWAY WIN
         ],
       ),
     );

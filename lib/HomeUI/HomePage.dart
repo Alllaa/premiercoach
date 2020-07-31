@@ -77,7 +77,7 @@ class _HomeMainState extends State<HomeMain> {
   @override
   void initState() {
     // TODO: implement initState
-    getUserInfo();
+//    getUserInfo();
     getMatches();
     super.initState();
   }
@@ -372,7 +372,7 @@ class _HomeMainState extends State<HomeMain> {
 
   Widget homeWidget() {
     return SingleChildScrollView(
-      child: Container(
+      child: Container(padding: EdgeInsets.only(bottom: 200),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
