@@ -48,7 +48,7 @@ class AuthApi implements AuthRepository {
         AppClass.nameSaver(AppClass.token);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => HomePage("Arsenal",0)),
         );
       }
       else {
@@ -89,7 +89,7 @@ class AuthApi implements AuthRepository {
         AppClass.nameSaver(AppClass.token);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => HomePage("Arsenal",0)),
         );
       }
       else {

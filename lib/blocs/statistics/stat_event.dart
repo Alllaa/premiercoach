@@ -8,8 +8,10 @@ abstract class StatEvent extends Equatable {
 
 class GetStatistics extends StatEvent {
   String matchId;
-  GetStatistics(this.matchId);
+  String homeId;
+  String awayId;
+  GetStatistics(this.matchId,this.homeId,this.awayId);
   @override
   // TODO: implement props
-  List<Object> get props => [matchId];
+  List<Object> get props => [matchId,homeId,awayId];
 }

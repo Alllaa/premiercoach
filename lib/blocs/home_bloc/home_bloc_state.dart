@@ -4,6 +4,7 @@ import 'package:premiercoach/model/fixturesMatches.dart';
 import 'package:premiercoach/model/formationModel.dart';
 import 'package:premiercoach/model/teamRanking.dart';
 import 'package:premiercoach/model/user.dart';
+import 'package:premiercoach/model/user_ranking_model.dart';
 
 @immutable
 abstract class HomeBlocState extends Equatable {
@@ -42,6 +43,15 @@ class StandingLoaded extends HomeBlocState {
   @override
   // TODO: implement props
   List<Object> get props => null;
+}
+class Ranking extends HomeBlocState {
+  final RankingModel rankingModel;
+
+  Ranking(this.rankingModel) : super();
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [rankingModel];
 }
 class FormationLoaded extends HomeBlocState {
   final Squad players;

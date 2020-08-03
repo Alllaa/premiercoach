@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         LoginScreen.id: (context) => LoginScreen(),
         SignUpScreen.id: (context) => SignUpScreen(),
-        HomePage.id: (context) => HomePage(),
+        HomePage.id: (context) => HomePage("Arsenal",0),
       },
     );
   }

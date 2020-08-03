@@ -1,11 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:premiercoach/app_class.dart';
 import 'package:premiercoach/model/fixturesMatches.dart';
+import 'package:premiercoach/model/h2hModel.dart';
 import 'package:premiercoach/model/machine_model.dart';
 import 'package:premiercoach/model/statistics_model.dart';
 abstract class MatchRepository {
   Future<Statistics> matchStatistics(String matchId);
   Future<MachineModel> machinePredict(String home,String away);
+  Future<H2hModel> h2hResult(String homeId,String awayId);
 }
 class MatchStatistics implements MatchRepository{
   Dio dio = new Dio();
@@ -32,6 +34,7 @@ class MatchStatistics implements MatchRepository{
     try{
       var response = await dio.get("https://aifootballcoach.herokuapp.com/predict?home=${home}&away=${away}");
       print("response ${response.statusCode}");
+      print("response ${response.data}");
 
       if(response.statusCode == 200){
 
@@ -44,5 +47,22 @@ class MatchStatistics implements MatchRepository{
     }
   }
 
+  @override
+  Future<H2hModel> h2hResult(String homeId, String awayId) async{
+    // TODO: implement h2hResult
+    try{
+      var response = await dio.get("http://livescore-api.com/api-client/teams/head2head.json?team1_id=${homeId}&team2_id=${awayId}&key=${AppClass.key}&secret=${AppClass.secretKey}");
+      print("response ${response.statusCode}");
+      print("response ${(response.data)['data']['h2h']}");
 
+      if(response.statusCode == 200){
+
+        return H2hModel.fromJson(response.data);
+      }else{
+        print("response23 ${response.statusCode}");
+      }
+    }catch(e){
+      print("Error ${e}");
+    }
+  }
 }

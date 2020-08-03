@@ -1,19 +1,24 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_circular_chart/flutter_circular_chart.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:premiercoach/UTILS/Loader.dart';
 import 'package:premiercoach/blocs/auth_bloc/authentication_bloc.dart';
 import 'package:premiercoach/blocs/machine_bloc/machine_bloc.dart';
 import 'package:premiercoach/blocs/statistics/stat_bloc.dart';
 import 'package:premiercoach/blocs/statistics/stat_event.dart';
 import 'package:premiercoach/blocs/statistics/stat_state.dart';
 import 'package:premiercoach/model/fixturesMatches.dart';
+import 'package:premiercoach/model/h2hModel.dart';
 import 'package:premiercoach/model/machine_model.dart';
 import 'package:premiercoach/model/statistics_model.dart';
 import 'package:premiercoach/repository/home.dart';
 import 'package:premiercoach/repository/matches_statistics.dart';
-
+import 'dart:math' as math;
 import '../blocs/statistics/stat_state.dart';
+import 'h2h_matches.dart';
 
 class DetailsPageBloc extends StatefulWidget {
   String matchId;
@@ -24,6 +29,9 @@ class DetailsPageBloc extends StatefulWidget {
 }
 
 class _DetailsPageBlocState extends State<DetailsPageBloc> {
+
+
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -52,9 +60,16 @@ class DetailsPage extends StatefulWidget {
 
 class _DetailsPageState extends State<DetailsPage> {
 
+  int homeWinsNumber = 0;
+  int awayWinsNumber = 0;
+  int drawNumber = 0;
+
+  int done = 0;
   Statistics matchStatistics;
+  H2hModel h2hModel;
   MachineModel machineModel;
    final GlobalKey<AnimatedCircularChartState> _chartKey = new GlobalKey<AnimatedCircularChartState>();
+   final GlobalKey<AnimatedCircularChartState> _chartKey2 = new GlobalKey<AnimatedCircularChartState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   
   String splitString(String event,int home_away){
@@ -63,9 +78,11 @@ class _DetailsPageState extends State<DetailsPage> {
   
   getMatchesStatistics(){
     final bloc = BlocProvider.of<StatBloc>(context);
-    bloc.add(GetStatistics(widget.matchId));
+    bloc.add(GetStatistics(widget.matchId,widget.match.homeId,widget.match.awayId));
   }
   getMachinePredict(){
+    print("HOME ${widget.match.homeName}");
+    print("Away ${widget.match.awayName}");
     final bloc = BlocProvider.of<MachineBloc>(context);
     bloc.add(EventMachinePredict(widget.match.homeName, widget.match.awayName));
   }
@@ -89,6 +106,17 @@ class _DetailsPageState extends State<DetailsPage> {
       appBar: AppBar(
         elevation: 2.0,
         backgroundColor: Color(0xff00FF87),
+        centerTitle: true,
+        title: Container(
+          child: Text(
+            "Details",
+            style: TextStyle(
+              color: Color(0xff37003C),
+              fontSize: 17.0,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
         leading: Container(
           child: IconButton(icon: Icon(Icons.arrow_back,color: Color(0xff37003C),size: 25,),
               onPressed: (){
@@ -99,56 +127,60 @@ class _DetailsPageState extends State<DetailsPage> {
 
       body: SingleChildScrollView(
         child: Container(
+          padding: EdgeInsets.only(bottom: 20.0),
           child:Column(
             children: <Widget>[
               //title
               SizedBox(
-                height: 15.0,
+                height: 25.0,
               ),
-              Container(
-                child: Text(
-                  "Details",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17.0,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+
+              BlocBuilder<StatBloc,StatState>(
+                builder: (context,state)
+                {
+                  if(state is InitialHomeBlocState) {
+                    return Container(
+                      margin: EdgeInsets.only(top: 0.0),
+                      color: Colors.transparent,
+                      child: ColorLoader(),
+                    );
+                  }else if(state is StatisticsState)
+                  {
+                    print("MOdel ${state.h2hModel}");
+                    print("MOdel ${widget.match.awayId}");
+                    print("MOdel ${widget.match.homeId}");
+                    h2hModel = state.h2hModel;
+                    awayWinsNumber = 0;
+                    homeWinsNumber = 0;
+                    drawNumber = 0;
+                    for(int i= 0;i<h2hModel.data.h2h.length;i++){
+                      if(h2hModel.data.h2h[i].homeId == widget.match.homeId){
+                        if(int.parse(h2hModel.data.h2h[i].score.split("-")[0]) > int.parse(h2hModel.data.h2h[i].score.split("-")[1])){
+                          homeWinsNumber++;
+                        }else if(int.parse(h2hModel.data.h2h[i].score.split("-")[0]) < int.parse(h2hModel.data.h2h[i].score.split("-")[1])){
+                          awayWinsNumber++;
+                        }else{
+                          drawNumber++;
+                        }
+                      }else{
+                        if(int.parse(h2hModel.data.h2h[i].score.split("-")[0]) < int.parse(h2hModel.data.h2h[i].score.split("-")[1])){
+                          homeWinsNumber++;
+                        }else if(int.parse(h2hModel.data.h2h[i].score.split("-")[0]) > int.parse(h2hModel.data.h2h[i].score.split("-")[1])){
+                          awayWinsNumber++;
+                        }else{
+                          drawNumber++;
+                        }
+                      }
+
+                    }
+                    print("DONE ${done}");
+                    return resultsDesign();
+                  }
+                  else{
+                    return Container();
+                  }
+                },
               ),
-              //last matches
-              SizedBox(
-                height: 20.0,
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 15.0,right: 15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      child: Text(
-                        "Last 7 matches",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17.0,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      child: Text(
-                        "View details >",
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(.8),
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              resultsDesign(),
               Container(
                 height: 1.5,
                 width: MediaQuery.of(context).size.width/2,
@@ -158,13 +190,14 @@ class _DetailsPageState extends State<DetailsPage> {
               SizedBox(
                 height: 15.0,
               ),
-              // Bloc D
               BlocBuilder<MachineBloc,MachineState>(
                 builder: (context,state)
                 {
                   if(state is MachineInitial) {
-                    return Center(
-                      child: CircularProgressIndicator(),
+                    return Container(
+                      margin: EdgeInsets.only(top: 0.0),
+                      color: Colors.transparent,
+                      child: ColorLoader(),
                     );
                   }else if(state is PredictMachineState)
                   {
@@ -176,7 +209,6 @@ class _DetailsPageState extends State<DetailsPage> {
                   }
                 },
               ),
-
               Container(
                 height: 1.5,
                 width: MediaQuery.of(context).size.width/2,
@@ -190,13 +222,17 @@ class _DetailsPageState extends State<DetailsPage> {
                 builder: (context,state)
                 {
                   if(state is InitialHomeBlocState) {
-                    return Center(
-                      child: CircularProgressIndicator(),
+                    return Container(
+                      margin: EdgeInsets.only(top: 0.0),
+                      color: Colors.transparent,
+                      child: ColorLoader(),
                     );
                   }else if(state is StatisticsState)
                     {
                       matchStatistics = state.stat;
-                      return  statisticsDesign();
+                      h2hModel = state.h2hModel;
+                      print("DONExx ${matchStatistics.toString()}");
+                      return statisticsDesign();
                     }
                   else{
                     return Container();
@@ -215,6 +251,44 @@ class _DetailsPageState extends State<DetailsPage> {
     return Container(
       child: Column(
         children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(left: 15.0,right: 15.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  child: Text(
+                    "Last ${h2hModel.data.h2h.length} matches",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 17.0,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: (){
+                    Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => H2hMatches(h2hModel)
+                        )
+                    );
+                  },
+                  child: Container(
+                    child: Text(
+                      "View details >",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           SizedBox(
             height: 15.0,
           ),
@@ -236,7 +310,7 @@ class _DetailsPageState extends State<DetailsPage> {
                     children: <Widget>[
                       Container(
                         child: Text(
-                          "3",
+                          "${homeWinsNumber}",
                           style: TextStyle(
                               color: Colors.white
                           ),
@@ -269,7 +343,7 @@ class _DetailsPageState extends State<DetailsPage> {
                     children: <Widget>[
                       Container(
                         child: Text(
-                          "3",
+                          "${drawNumber}",
                           style: TextStyle(
                               color: Colors.white
                           ),
@@ -302,7 +376,7 @@ class _DetailsPageState extends State<DetailsPage> {
                     children: <Widget>[
                       Container(
                         child: Text(
-                          "3",
+                          "${awayWinsNumber}",
                           style: TextStyle(
                               color: Colors.white
                           ),
@@ -355,105 +429,182 @@ class _DetailsPageState extends State<DetailsPage> {
               ),
             ),
           ),
-          SizedBox(
-            height: 10.0,
-          ),
-          //HOME WIN
+          SizedBox(height: 30.0,),
           Container(
-            child: Text(
-              "predict score ${widget.match.homeName} wins ${machineModel.homeWinHomegoals} : ${machineModel.homeWinAwaygoals}",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-                fontSize: 17,
-              ),
-            ),
-          ),
-          Container(
-            child: Text(
-              "probaility that  ${widget.match.homeName} wins is :",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-                fontSize: 17,
-              ),
-            ),
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            margin: EdgeInsets.only(right: 20.0,left: 20.0),
-            child: Stack(
+            margin: EdgeInsets.only(left: 15.0,right: 15.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                      color: Color(0xff034694),
-                      borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(40),
-                          topRight: Radius.circular(40.0),
-                          bottomLeft: Radius.circular(40.0),
-                          topLeft: Radius.circular(40.0)
-                      )
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: 20.0,
+                        height: 20.0,
+                        color:  Color(0xff034694),
+                      ),
+                      SizedBox(height: 20.0,),
+                      Container(
+                        width: 20.0,
+                        height: 20.0,
+                        color: Colors.green,
+                      ),
+                      SizedBox(height: 20.0,),
+                      Container(
+                        width: 20.0,
+                        height: 20.0,
+                        color: Colors.red,
+                      ),
+
+
+                    ],
                   ),
                 ),
+                SizedBox(width: 35.0,),
                 Container(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width*(double.parse(machineModel.homeWinPercentage)/100),
-                  decoration: BoxDecoration(
-                      color: Color(0xffE01922),
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(40),
-                          topLeft: Radius.circular(40.0)
-                      )
-                  ),
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "${double.parse(machineModel.homeWinPercentage.substring(0,3))} %",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w300
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Container (
+                        child: Text(
+                          "Draw",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w300
+                          ),
+                        ),
                       ),
-                    ),
+                      SizedBox(height: 20.0,),
+                      Container (
+                        child: Text(
+                          "Win",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w300
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20.0,),
+                      Container (
+                        child: Text(
+                          "Loss",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w300
+                          ),
+                        ),
+                      ),
+
+
+                    ],
+                  ),
+                ),
+                SizedBox(width: 35.0,),
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+
+                      Container(
+                        child: Text(
+                          "${(double.parse(machineModel.drawPercentage)).abs()}%",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w300
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20.0,),
+                      Container(
+                        child: Text(
+                          "${machineModel.homeWinPercentage}%",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w300
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20.0,),
+                      Container(
+                        child: Text(
+                          "${(double.parse(machineModel.awayWinPercentage)).abs()}%",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w300
+                          ),
+                        ),
+                      ),
+
+
+                    ],
+                  ),
+                ),
+                SizedBox(width: 35.0,),
+
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        child: Text(
+                          "${machineModel.drawAwaygoals} - ${machineModel.drawAwaygoals}",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w300
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20.0,),
+                      Container(
+                        child: Text(
+                          "${machineModel.homeWinHomegoals} - ${machineModel.homeWinAwaygoals}",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w300
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20.0,),
+                      Container(
+                        child: Text(
+                          "${machineModel.awayWinHomegoals} - ${machineModel.awayWinAwaygoals}",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w300
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
           SizedBox(height: 20.0,),
-          //AWAY WIN
           Container(
-            child: Text(
-              "predict score ${widget.match.awayName} wins ${machineModel.awayWinHomegoals} : ${machineModel.awayWinAwaygoals}",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-                fontSize: 17,
-              ),
-            ),
-          ),
-          Container(
-            child: Text(
-              "probaility that  ${widget.match.awayName} wins is :",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-                fontSize: 17,
-              ),
-            ),
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            margin: EdgeInsets.only(right: 20.0,left: 20.0),
+            margin: EdgeInsets.only(left: 15.0,right: 15.0),
             child: Stack(
               children: <Widget>[
                 Container(
-                  height: 50,
+                  height: 45,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
-                      color: Color(0xff034694),
+                      color: Colors.green,
                       borderRadius: BorderRadius.only(
                           bottomRight: Radius.circular(40),
                           topRight: Radius.circular(40.0),
@@ -461,91 +612,28 @@ class _DetailsPageState extends State<DetailsPage> {
                           topLeft: Radius.circular(40.0)
                       )
                   ),
+                  padding: EdgeInsets.only(right: 20.0,top: 5.0),
+                  alignment: Alignment.centerRight,
                 ),
                 Container(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width*(double.parse(machineModel.awayWinPercentage)/100),
-                  decoration: BoxDecoration(
-                      color: Color(0xffE01922),
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(40),
-                          topLeft: Radius.circular(40.0)
-                      )
-                  ),
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "${double.parse(machineModel.awayWinPercentage.substring(0,4))} %",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w300
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 20.0,),
-          //DRAW
-          Container(
-            child: Text(
-              "predict score draw ${machineModel.drawHomegoals} : ${machineModel.drawAwaygoals}",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-                fontSize: 17,
-              ),
-            ),
-          ),
-          Container(
-            child: Text(
-              "probaility  draw :",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-                fontSize: 17,
-              ),
-            ),
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            margin: EdgeInsets.only(right: 20.0,left: 20.0),
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                      color: Color(0xff034694),
-                      borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(40),
-                          topRight: Radius.circular(40.0),
-                          bottomLeft: Radius.circular(40.0),
-                          topLeft: Radius.circular(40.0)
-                      )
-                  ),
-                ),
-                Container(
-                  height: 50,
+                  height: 45,
                   width: MediaQuery.of(context).size.width*(double.parse(machineModel.drawPercentage)/100),
                   decoration: BoxDecoration(
-                      color: Color(0xffE01922),
+                      color: Color(0xff034694),
                       borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(40),
                           topLeft: Radius.circular(40.0)
                       )
                   ),
+                ),
+                Positioned(
+                  left:MediaQuery.of(context).size.width*(double.parse(machineModel.drawPercentage)/100) ,
                   child: Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "${double.parse(machineModel.drawPercentage.substring(0,3))} %",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w300
-                      ),
+                    height: 45,
+                    width: MediaQuery.of(context).size.width*(double.parse(machineModel.awayWinPercentage)/100),
+                    decoration: BoxDecoration(
+                        color: Colors.red,
+
                     ),
                   ),
                 ),
@@ -559,7 +647,27 @@ class _DetailsPageState extends State<DetailsPage> {
     );
   }
   Widget statisticsDesign(){
-    return Container(
+    return matchStatistics.toString() == 'null'?Container(
+      alignment: Alignment.center,
+      margin: EdgeInsets.only(top: 40),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Image.asset(
+            'assets/images/nullempty.png',
+            height: 64.0,
+            width: 64.0,
+          ),
+          Text(
+            "  No details for this match",
+            style: TextStyle(
+                color: Colors.white
+            ),
+          ),
+        ],
+      ),
+    ):Container(
       child: Column(
         children: <Widget>[
           Container(
@@ -583,7 +691,7 @@ class _DetailsPageState extends State<DetailsPage> {
               children: <Widget>[
                 Container(
                   child: Text(
-                    '3',
+                    '${widget.match.score.split("-")[0]}',
                     style: TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.w500,
@@ -603,7 +711,7 @@ class _DetailsPageState extends State<DetailsPage> {
                 ),
                 Container(
                   child: Text(
-                    '3',
+                    '${widget.match.score.split("-")[1]}',
                     style: TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.w500,
@@ -685,6 +793,7 @@ class _DetailsPageState extends State<DetailsPage> {
                     ),
                   ),
                 ),
+
                 Container(
                   child: AnimatedCircularChart(
                     key: _chartKey,

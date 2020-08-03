@@ -1,12 +1,12 @@
-class MatchInfoModel  {
-  String success;
-  Match  data;
+class H2hModel {
+  bool success;
+  Data data;
 
-  MatchInfoModel ({this.success, this.data});
+  H2hModel({this.success, this.data});
 
-  MatchInfoModel .fromJson(Map<String, dynamic> json) {
-    success = json['success'].toString();
-    data = json['data'] != null ? new Match.fromJson(json['data']) : null;
+  H2hModel.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -19,39 +19,30 @@ class MatchInfoModel  {
   }
 }
 
-class Match  {
-  List<Fixtures> match;
-  int totalPages;
-  String nextPage;
-  String prevPage;
+class Data {
+  List<H2h> h2h;
 
-  Match ({this.match, this.totalPages, this.nextPage, this.prevPage});
+  Data({this.h2h});
 
-  Match .fromJson(Map<String, dynamic> json) {
-    if (json['match'] != null) {
-      match = new List<Fixtures>();
-      json['match'].forEach((v) {
-        match.add(new Fixtures.fromJson(v));
+  Data.fromJson(Map<String, dynamic> json) {
+    if (json['h2h'] != null) {
+      h2h = new List<H2h>();
+      json['h2h'].forEach((v) {
+        h2h.add(new H2h.fromJson(v));
       });
     }
-    totalPages = json['total_pages'];
-    nextPage = json['next_page'].toString();
-    prevPage = json['prev_page'].toString();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.match != null) {
-      data['match'] = this.match.map((v) => v.toJson()).toList();
+    if (this.h2h != null) {
+      data['h2h'] = this.h2h.map((v) => v.toJson()).toList();
     }
-    data['total_pages'] = this.totalPages;
-    data['next_page'] = this.nextPage;
-    data['prev_page'] = this.prevPage;
     return data;
   }
 }
 
-class Fixtures {
+class H2h {
   String id;
   String date;
   String homeName;
@@ -60,21 +51,17 @@ class Fixtures {
   String htScore;
   String ftScore;
   String etScore;
-  String time;
   String leagueId;
-  String status;
-  String added;
-  String lastChanged;
   String homeId;
   String awayId;
   String competitionId;
   String location;
-  String fixtureId;
   String scheduled;
-  String competitionName;
   Outcomes outcomes;
+  Competition competition;
+  League league;
 
-  Fixtures(
+  H2h(
       {this.id,
         this.date,
         this.homeName,
@@ -83,21 +70,17 @@ class Fixtures {
         this.htScore,
         this.ftScore,
         this.etScore,
-        this.time,
         this.leagueId,
-        this.status,
-        this.added,
-        this.lastChanged,
         this.homeId,
         this.awayId,
         this.competitionId,
         this.location,
-        this.fixtureId,
         this.scheduled,
-        this.competitionName,
-        this.outcomes});
+        this.outcomes,
+        this.competition,
+        this.league});
 
-  Fixtures.fromJson(Map<String, dynamic> json) {
+  H2h.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     date = json['date'];
     homeName = json['home_name'];
@@ -106,21 +89,20 @@ class Fixtures {
     htScore = json['ht_score'];
     ftScore = json['ft_score'];
     etScore = json['et_score'];
-    time = json['time'];
     leagueId = json['league_id'];
-    status = json['status'];
-    added = json['added'];
-    lastChanged = json['last_changed'];
     homeId = json['home_id'];
     awayId = json['away_id'];
     competitionId = json['competition_id'];
     location = json['location'];
-    fixtureId = json['fixture_id'];
     scheduled = json['scheduled'];
-    competitionName = json['competition_name'];
     outcomes = json['outcomes'] != null
         ? new Outcomes.fromJson(json['outcomes'])
         : null;
+    competition = json['competition'] != null
+        ? new Competition.fromJson(json['competition'])
+        : null;
+    league =
+    json['league'] != null ? new League.fromJson(json['league']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -133,20 +115,20 @@ class Fixtures {
     data['ht_score'] = this.htScore;
     data['ft_score'] = this.ftScore;
     data['et_score'] = this.etScore;
-    data['time'] = this.time;
     data['league_id'] = this.leagueId;
-    data['status'] = this.status;
-    data['added'] = this.added;
-    data['last_changed'] = this.lastChanged;
     data['home_id'] = this.homeId;
     data['away_id'] = this.awayId;
     data['competition_id'] = this.competitionId;
     data['location'] = this.location;
-    data['fixture_id'] = this.fixtureId;
     data['scheduled'] = this.scheduled;
-    data['competition_name'] = this.competitionName;
     if (this.outcomes != null) {
       data['outcomes'] = this.outcomes.toJson();
+    }
+    if (this.competition != null) {
+      data['competition'] = this.competition.toJson();
+    }
+    if (this.league != null) {
+      data['league'] = this.league.toJson();
     }
     return data;
   }
@@ -170,6 +152,47 @@ class Outcomes {
     data['half_time'] = this.halfTime;
     data['full_time'] = this.fullTime;
     data['extra_time'] = this.extraTime;
+    return data;
+  }
+}
+
+class Competition {
+  String id;
+  String name;
+
+  Competition({this.id, this.name});
+
+  Competition.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    return data;
+  }
+}
+
+class League {
+  String id;
+  String name;
+  String countryId;
+
+  League({this.id, this.name, this.countryId});
+
+  League.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    countryId = json['country_id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['country_id'] = this.countryId;
     return data;
   }
 }

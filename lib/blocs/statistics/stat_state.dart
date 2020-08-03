@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:premiercoach/model/fixturesMatches.dart';
 import 'package:premiercoach/model/formationModel.dart';
+import 'package:premiercoach/model/h2hModel.dart';
 import 'package:premiercoach/model/statistics_model.dart';
 import 'package:premiercoach/model/teamRanking.dart';
 import 'package:premiercoach/model/user.dart';
@@ -20,10 +21,11 @@ class InitialHomeBlocState extends StatState {
 
 class StatisticsState extends StatState{
   final Statistics stat;
-  const StatisticsState(this.stat);
+  final H2hModel h2hModel;
+  const StatisticsState(this.stat,this.h2hModel);
   @override
   // TODO: implement props
-  List<Object> get props => [stat];
+  List<Object> get props => [stat,h2hModel];
 }
 class StatError extends StatState {
   final String message;

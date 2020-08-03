@@ -14,10 +14,12 @@ abstract class HomeBlocEvent extends Equatable {
 //}
 
 class MatchEvent extends HomeBlocEvent {
-  const MatchEvent();
+
+  String date;
+  MatchEvent(this.date);
   @override
   // TODO: implement props
-  List<Object> get props => null;
+  List<Object> get props => [date];
 }
 class GetStanding extends HomeBlocEvent {
   const GetStanding();
@@ -26,7 +28,13 @@ class GetStanding extends HomeBlocEvent {
   // TODO: implement props
   List<Object> get props => null;
 }
+class GetRanking extends HomeBlocEvent{
+  const GetRanking();
 
+  @override
+  // TODO: implement props
+  List<Object> get props => null;
+}
 class GetBest extends HomeBlocEvent {
   String teamName;
   GetBest(this.teamName);

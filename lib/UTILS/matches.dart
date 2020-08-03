@@ -19,9 +19,9 @@ class Matches{
     return ListView.builder(
         shrinkWrap: true,
         physics: ClampingScrollPhysics(),
-        itemCount: match.fixtures.length,
+        itemCount: match.match.length,
         itemBuilder: (context,index){
-          if(match.fixtures.isEmpty){
+          if(match.match.isEmpty){
             return Center(
               child: Text(
                 "Empty",
@@ -33,35 +33,35 @@ class Matches{
           }else{
             return Column(
               children: <Widget>[
-                index!=0? match.fixtures[index].round == match.fixtures[index-1].round?Container():
-                Container(
-                  margin: EdgeInsets.only(left: 15.0,top: 8,bottom: 8),
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Round ${match.fixtures[index].round}",
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ):Container(
-                  margin: EdgeInsets.only(left: 15.0,top: 8,bottom: 8),
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Round ${match.fixtures[index].round}",
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+//                index!=0? match.match[index].round == match.match[index-1].round?Container():
+//                Container(
+//                  margin: EdgeInsets.only(left: 15.0,top: 8,bottom: 8),
+//                  alignment: Alignment.center,
+//                  child: Text(
+//                    "Round ${match.match[index].round}",
+//                    style: TextStyle(
+//                      fontSize: 18.0,
+//                      color: Colors.white,
+//                      fontWeight: FontWeight.w600,
+//                    ),
+//                  ),
+//                ):Container(
+//                  margin: EdgeInsets.only(left: 15.0,top: 8,bottom: 8),
+//                  alignment: Alignment.center,
+//                  child: Text(
+//                    "Round ${match.match[index].round}",
+//                    style: TextStyle(
+//                      fontSize: 18.0,
+//                      color: Colors.white,
+//                      fontWeight: FontWeight.w600,
+//                    ),
+//                  ),
+//                ),
                 InkWell(
                   onTap: (){
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => DetailsPageBloc("178506",match.fixtures[index]),
+                        builder: (_) => DetailsPageBloc("${match.match[index].id}",match.match[index]),
                       ),
                     );
                   },
@@ -86,7 +86,7 @@ class Matches{
                             children: <Widget>[
                               Container(
                                 child: Image.asset(
-                                  "assets/logo/${match.fixtures[index].homeId}.png",
+                                  "assets/logo/${match.match[index].homeId}.png",
                                   height: 50.0,
                                   width: 50.0,
                                 ),
@@ -95,7 +95,7 @@ class Matches{
                                 width: MediaQuery.of(context).size.width/4.0,
                                 margin: EdgeInsets.only(left: 5.0),
                                 child:AutoSizeText(
-                                  '${match.fixtures[index].homeName}',
+                                  '${match.match[index].homeName}',
                                   style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
                                   maxLines: 2,
                                   textAlign: TextAlign.center,
@@ -112,10 +112,10 @@ class Matches{
                                 child: Text("VS",style: TextStyle(fontSize: 15,color: Colors.white),),
                               ),
                               Container(
-                                child: Text("${match.fixtures[index].date}",style: TextStyle(fontSize: 15,color: Colors.white),),
+                                child: Text("${match.match[index].date}",style: TextStyle(fontSize: 15,color: Colors.white),),
                               ),
                               Container(
-                                child: Text("${match.fixtures[index].time}",style: TextStyle(fontSize: 15,color: Colors.white),),
+                                child: Text("${match.match[index].time}",style: TextStyle(fontSize: 15,color: Colors.white),),
                               ),
                             ],
                           ),
@@ -128,7 +128,7 @@ class Matches{
                             children: <Widget>[
                               Container(
                                 child: Image.asset(
-                                  "assets/logo/${match.fixtures[index].awayId}.png",
+                                  "assets/logo/${match.match[index].awayId}.png",
                                   height: 50.0,
                                   width: 50.0,
                                 ),
@@ -137,7 +137,7 @@ class Matches{
                                 width: MediaQuery.of(context).size.width/4.0,
                                 margin: EdgeInsets.only(left: 5.0),
                                 child:AutoSizeText(
-                                  '${match.fixtures[index].awayName}',
+                                  '${match.match[index].awayName}',
                                   style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
                                   maxLines: 2,
                                   textAlign: TextAlign.center,
@@ -158,129 +158,207 @@ class Matches{
         }
     );
   }
-  Widget predictMatches(Match match,BuildContext context){
-    String round = match.fixtures[0].round;
-    return ListView.builder(
-        shrinkWrap: true,
-        physics: ClampingScrollPhysics(),
-        itemCount: match.fixtures.length,
-        itemBuilder: (context,index){
-          return Column(
-            children: <Widget>[
-              index == 0? Container(
-                margin: EdgeInsets.only(left: 15.0,top: 8,bottom: 8),
-                alignment: Alignment.center,
-                child: Text(
-                  "Round ${match.fixtures[index].round}",
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
+  Widget predictMatches(Match match,BuildContext context) {
+//    String round = match.match[0].round;
+    if (match.toString() == 'null') {
+     return Container(
+        alignment: Alignment.center,
+        margin: EdgeInsets.only(top: 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Image.asset(
+              'assets/images/nullempty.png',
+              height: 64.0,
+              width: 64.0,
+            ),
+            Text(
+              "  No Matches",
+              style: TextStyle(
+                  color: Colors.white
+              ),
+            ),
+          ],
+        ),
+      );
+    } else{
+      return ListView.builder(
+          shrinkWrap: true,
+          physics: ClampingScrollPhysics(),
+          itemCount: match.match.length,
+          itemBuilder: (context, index) {
+            return Column(
+              children: <Widget>[
+//              index == 0? Container(
+//                margin: EdgeInsets.only(left: 15.0,top: 8,bottom: 8),
+//                alignment: Alignment.center,
+//                child: Text(
+//                  "Round ${match.match[index].round}",
+//                  style: TextStyle(
+//                    fontSize: 18.0,
+//                    color: Colors.white,
+//                    fontWeight: FontWeight.w600,
+//                  ),
+//                ),
+//              ):Container(),
+                InkWell(
+                  onTap: () {
+                    if (DateTime.now().isAfter(
+                        DateTime.parse(match.match[index].date))) {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              AlertDialog(
+                                backgroundColor: Colors.grey,
+                                title: Text(
+                                  "This match has been ended so you cann't predict",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                actions: <Widget>[
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text(
+                                      "OK",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              )
+                      );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) =>
+                            CustomDialog(
+                              title: "Success",
+                              description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+                              buttonText: "Okay",
+                              fixtures: match.match[index],
+                            ),
+                      );
+                    }
+                  },
+                  splashColor: Color(0xff37003C),
+                  highlightColor: Color(0xff37003C),
+                  child: Container(
+                    margin: EdgeInsets.only(
+                        left: 10.0, right: 10.0, bottom: 10.0),
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      border: Border.all(color: Color(0xff00FF87)),
+                      borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.only(
+                              left: 10.0, right: 10.0, bottom: 4.0, top: 4.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                child: Image.asset(
+                                  "assets/logo/${match.match[index]
+                                      .homeId}.png",
+                                  height: 50.0,
+                                  width: 50.0,
+                                ),
+                              ),
+                              Container(
+                                width: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .width / 4.0,
+                                margin: EdgeInsets.only(left: 5.0),
+                                child: AutoSizeText(
+                                  '${match.match[index].homeName}',
+                                  style: TextStyle(color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w300),
+                                  maxLines: 2,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                margin: EdgeInsets.only(top: 5.0),
+                                child: Text("VS", style: TextStyle(
+                                    fontSize: 15, color: Colors.white),),
+                              ),
+                              Container(
+                                child: Text("${match.match[index].date}",
+                                  style: TextStyle(
+                                      fontSize: 15, color: Colors.white),),
+                              ),
+                              Container(
+                                child: Text("${match.match[index].time}",
+                                  style: TextStyle(
+                                      fontSize: 15, color: Colors.white),),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(
+                              left: 10.0, right: 10.0, bottom: 4.0, top: 4.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                child: Image.asset(
+                                  "assets/logo/${match.match[index]
+                                      .awayId}.png",
+                                  height: 50.0,
+                                  width: 50.0,
+                                ),
+                              ),
+                              Container(
+                                width: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .width / 4.0,
+                                margin: EdgeInsets.only(left: 5.0),
+                                child: AutoSizeText(
+                                  '${match.match[index].awayName}',
+                                  style: TextStyle(color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w300),
+                                  maxLines: 2,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ):Container(),
-
-              round == match.fixtures[index].round? InkWell(
-                onTap: (){
-
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) => CustomDialog(
-                        title: "Success",
-                        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                        buttonText: "Okay",
-                        fixtures: match.fixtures[index],
-                      ),
-                    );
-                },
-                splashColor: Color(0xff37003C),
-                highlightColor: Color(0xff37003C),
-                child: Container(
-                  margin: EdgeInsets.only(left: 10.0,right: 10.0,bottom: 10.0),
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    border: Border.all(color: Color(0xff00FF87)),
-                    borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.only(left: 10.0,right: 10.0,bottom: 4.0,top: 4.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              child: Image.asset(
-                                "assets/logo/${match.fixtures[index].homeId}.png",
-                                height: 50.0,
-                                width: 50.0,
-                              ),
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width/4.0,
-                              margin: EdgeInsets.only(left: 5.0),
-                              child: AutoSizeText(
-                                '${match.fixtures[index].homeName}',
-                                style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              margin: EdgeInsets.only(top: 5.0),
-                              child: Text("VS",style: TextStyle(fontSize: 15,color: Colors.white),),
-                            ),
-                            Container(
-                              child: Text("${match.fixtures[index].date}",style: TextStyle(fontSize: 15,color: Colors.white),),
-                            ),
-                            Container(
-                              child: Text("${match.fixtures[index].time}",style: TextStyle(fontSize: 15,color: Colors.white),),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(left: 10.0,right: 10.0,bottom: 4.0,top: 4.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              child: Image.asset(
-                                "assets/logo/${match.fixtures[index].awayId}.png",
-                                height: 50.0,
-                                width: 50.0,
-                              ),
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width/4.0,
-                              margin: EdgeInsets.only(left: 5.0),
-                              child:AutoSizeText(
-                                '${match.fixtures[index].awayName}',
-                                style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w300),
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ):Container(),
-            ],
-          );
-        }
-    );
+              ],
+            );
+          }
+      );
+  }
   }
 }

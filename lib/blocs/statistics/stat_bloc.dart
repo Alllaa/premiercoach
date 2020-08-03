@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:premiercoach/model/fixturesMatches.dart';
+import 'package:premiercoach/model/h2hModel.dart';
 import 'package:premiercoach/model/statistics_model.dart';
 import 'package:premiercoach/model/user.dart';
 import 'package:premiercoach/repository/home.dart';
@@ -24,7 +25,8 @@ class StatBloc extends Bloc<StatEvent, StatState> {
     if (event is GetStatistics) {
       try {
         final Statistics statistics = await matchRepository.matchStatistics(event.matchId);
-        yield StatisticsState(statistics);
+        final H2hModel model = await matchRepository.h2hResult(event.homeId,event.awayId);
+        yield StatisticsState(statistics,model);
       } catch (e) {
         print(e.toString());
         yield StatError(e.toString());

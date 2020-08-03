@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:premiercoach/UTILS/Loader.dart';
 import 'package:premiercoach/blocs/home_bloc/home_bloc_bloc.dart';
 import 'package:premiercoach/blocs/home_bloc/home_bloc_event.dart';
 import 'package:premiercoach/blocs/home_bloc/home_bloc_state.dart';
@@ -20,7 +21,7 @@ class _StandingTabloueState extends State<StandingTabloue> {
   @override
   Widget build(BuildContext context) {
      return BlocProvider(
-      create: (BuildContext context) => HomeBlocBloc(HomeApi()),
+      create: (BuildContext context) => HomeBlocBloc(HomeApi(),"Arsenal",0),
       child: TeamsTable(),
     );
   }
@@ -54,8 +55,10 @@ class _TeamsTableState extends State<TeamsTable> {
               return  BlocBuilder<HomeBlocBloc, HomeBlocState>(
                 builder: (context, state) {
                   if (state is InitialHomeBlocState) {
-                    return Center(
-                      child: CircularProgressIndicator(),
+                    return Container(
+                      margin: EdgeInsets.only(top: 50.0),
+                      color: Colors.transparent,
+                      child: ColorLoader(),
                     );
                   } else if (state is StandingLoaded) {
                     pl = state.pl_standing;
@@ -68,8 +71,10 @@ class _TeamsTableState extends State<TeamsTable> {
               return BlocBuilder<HomeBlocBloc, HomeBlocState>(
                 builder: (context, state) {
                   if (state is InitialHomeBlocState) {
-                    return Center(
-                      child: CircularProgressIndicator(),
+                    return Container(
+                      margin: EdgeInsets.only(top: 50.0),
+                      color: Colors.transparent,
+                      child: ColorLoader(),
                     );
                   } else if (state is StandingLoaded) {
                     pl = state.pl_standing;

@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:premiercoach/HomeUI/PredictWidget.dart';
 import 'package:premiercoach/HomeUI/TableWidget.dart';
 import 'package:premiercoach/RegistrationUi/login_screen.dart';
+import 'package:premiercoach/UTILS/Loader.dart';
 import 'package:premiercoach/UTILS/matches.dart';
 import 'package:premiercoach/blocs/auth_bloc/authentication_bloc.dart';
 import 'package:premiercoach/blocs/auth_bloc/authentication_event.dart';
@@ -17,6 +18,7 @@ import 'package:premiercoach/model/teamRanking.dart';
 import 'package:premiercoach/model/user.dart';
 import 'package:premiercoach/repository/authentication.dart';
 import 'package:premiercoach/repository/home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'PitchPage.dart';
 import 'StandingTable.dart';
@@ -26,7 +28,9 @@ import 'StandingTable.dart';
 
 class HomePage extends StatefulWidget {
   static final String id = "home_page";
-
+  int pageRoute;
+  String teamName;
+  HomePage(this.teamName,this.pageRoute);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -37,18 +41,21 @@ class _HomePageState extends State<HomePage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider <HomeBlocBloc>(
-          create: (context) => HomeBlocBloc(HomeApi()),
+          create: (context) => HomeBlocBloc(HomeApi(),"${widget.teamName}",0),
         ),
         BlocProvider<AuthenticationBloc>(
           create: (context) => AuthenticationBloc(AuthApi()),
         ),
       ],
-      child: HomeMain(),
+      child: HomeMain("${widget.teamName}",widget.pageRoute),
     );
   }
 }
 
 class HomeMain extends StatefulWidget {
+  int pageRoute;
+  String teamName;
+  HomeMain(this.teamName,this.pageRoute);
   @override
   _HomeMainState createState() => _HomeMainState();
 }
@@ -59,6 +66,7 @@ class _HomeMainState extends State<HomeMain> {
 
   void _onItemTapped(int index) {
     setState(() {
+      widget.pageRoute = 0;
       _selectedIndex = index;
     });
   }
@@ -68,16 +76,18 @@ class _HomeMainState extends State<HomeMain> {
 
   getMatches(){
     final matchBloc = BlocProvider.of<HomeBlocBloc>(context);
-    matchBloc.add(MatchEvent());
+    matchBloc.add(MatchEvent('${dateSelected.toString().substring(0,10).replaceAll("-", "/")}'));
   }
   getUserInfo(){
     final bloc = BlocProvider.of<AuthenticationBloc>(context);
     bloc.add(InfoEvent());
   }
+  DateTime dateSelected;
   @override
   void initState() {
     // TODO: implement initState
 //    getUserInfo();
+    dateSelected = DateTime.now();
     getMatches();
     super.initState();
   }
@@ -107,8 +117,12 @@ class _HomeMainState extends State<HomeMain> {
               child: Padding(
             padding: const EdgeInsets.only(right: 10),
             child: InkWell(
-              onTap: ()
+              onTap: ()async
                 {
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  setState(() {
+                    prefs.clear();
+                  });
                   Navigator.pushReplacement(context,MaterialPageRoute(
                     builder: (context) => LoginScreen(),
                   ) );
@@ -135,30 +149,32 @@ class _HomeMainState extends State<HomeMain> {
         ),
       ),
       body:
-      _selectedIndex == 0 ? homeWidget() : _selectedIndex == 1 ? predictWidget(context,matches.data)
-          : _selectedIndex == 2 ?tableWidget(context) :_selectedIndex == 3 ?StandingTabloue():PitchPage() ,
+          widget.pageRoute == 4?PitchPage("${widget.teamName}"):
+          _selectedIndex == 0 ? homeWidget() : _selectedIndex == 1 ? predictWidget(context,matches.data)
+          : _selectedIndex == 2 ?UserRanking() :_selectedIndex == 3 ?StandingTabloue():PitchPage("${widget.teamName}") ,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color(0xff00FF87),
         elevation: 5.0,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Image.asset("assets/images/home.png",height: 30.0,width: 30.0,),
             title: Text('Home'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.brightness_5),
+            icon: Image.asset("assets/images/predict.png",height: 40.0,width: 40.0,),
             title: Text('Predict'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.border_all),
-            title: Text('Table'),
+            icon: Image.asset("assets/images/ranking.png",height: 40.0,width: 40.0,),
+            title: Text('Ranking'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.toys),
+            icon: Image.asset("assets/images/league_table.png",height: 40.0,width: 40.0,),
             title: Text('Table'),
           ),
+
           BottomNavigationBarItem(
-            icon: Icon(Icons.format_color_text),
+            icon: Image.asset("assets/images/formation.png",height: 40.0,width: 40.0,),
             title: Text('Formation'),
           ),
         ],
@@ -390,27 +406,59 @@ class _HomeMainState extends State<HomeMain> {
             SizedBox(
               height: 25.0,
             ),
+            Container(
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.only(left: 15.0,right: 15.0),
+              child: IconButton(
+                icon: Icon(
+                  Icons.date_range,
+                  color: Color(0xff00FF87),
+                  size: 40,
+                ),
+                onPressed: (){
+                  datePicker();
+                },
+              )
+            ),
+            SizedBox(
+              height: 25.0,
+            ),
             BlocBuilder<HomeBlocBloc, HomeBlocState>(
               builder: (context, state) {
                 if (state is InitialHomeBlocState) {
-                  return Center(
-                    child: CircularProgressIndicator(),
+                  return Container(
+                    margin: EdgeInsets.only(top: 50.0),
+                    color: Colors.transparent,
+                    child: ColorLoader(),
                   );
                 } else if (state is MatchInfoState) {
                   print("Hi All there 45456adsa54d65sa");
-                  if(state.match.data.fixtures.isEmpty){
-                    return Center(
-                      child: Text(
-                        "Empty",
-                        style: TextStyle(
-                            color: Colors.white
-                        ),
+                  if(state.match.data.match.isEmpty){
+                    return Container(
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.only(top: 40),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Image.asset(
+                              'assets/images/nullempty.png',
+                            height: 64.0,
+                            width: 64.0,
+                          ),
+                          Text(
+                            "  No Matches",
+                            style: TextStyle(
+                                color: Colors.white
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   }else{
                     matches = state.match;
                     return Container(
-                        height: MediaQuery.of(context).size.height,
+                        height: MediaQuery.of(context).size.height/1.70,
                         child: match.matches(state.match.data, 1, context,false)
                     );
                   }
@@ -424,5 +472,19 @@ class _HomeMainState extends State<HomeMain> {
         ),
       ),
     );
+  }
+
+  datePicker() async{
+    DateTime picked = await showDatePicker(
+      context: context,
+      firstDate: DateTime.parse("2019-08-09"),
+      initialDate: DateTime.now(),
+      lastDate: DateTime.now(),
+    );
+    setState(() {
+      dateSelected = picked;
+      getMatches();
+    });
+    print("DATE ${picked}");
   }
 }

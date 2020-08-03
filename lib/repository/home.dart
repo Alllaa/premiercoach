@@ -3,17 +3,20 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 
 import 'package:http/http.dart';
+import 'package:premiercoach/HomeUI/TableWidget.dart';
 import 'package:premiercoach/app_class.dart';
 import 'package:premiercoach/model/fixturesMatches.dart';
 import 'package:premiercoach/model/formationModel.dart';
 import 'package:premiercoach/model/teamRanking.dart';
 import 'package:premiercoach/model/user.dart';
+import 'package:premiercoach/model/user_ranking_model.dart';
 
 abstract class HomeRepository {
 //  Future<User> infoUser();
-  Future<MatchInfoModel> matchesInfo();
+  Future<MatchInfoModel> matchesInfo(String date);
   Future<List<Tabloue>> getTabloue();
   Future<Squad> getFormation(String team_name);
+  Future<RankingModel> getUserRanking();
 }
 
 class HomeApi implements HomeRepository {
@@ -51,11 +54,14 @@ class HomeApi implements HomeRepository {
       client.close();
     }
   }
-  Future<MatchInfoModel> matchesInfo()async{
+  Future<MatchInfoModel> matchesInfo(String date)async{
     print("URLS ${AppClass.fixturesUrl}");
+    String matchesUrl = "http://livescore-api.com/api-client/scores/history.json?&key=${AppClass.key}&secret=${AppClass.secretKey}&competition_id=2&from=${date}";
+
     try{
-      var response = await dio.get("${AppClass.fixturesUrl}");
+      var response = await dio.get("${matchesUrl}");
       print("response ${response.statusCode}");
+      print("response ${response.data['success']}");
 
     if(response.statusCode == 200){
          return MatchInfoModel.fromJson(response.data);
@@ -73,6 +79,27 @@ class HomeApi implements HomeRepository {
       final response = await client.get(url);
       print(response.body);
       return Squad.fromJson(jsonDecode(response.body));
+    }
+    catch(e){
+      throw e;
+    }
+    finally {
+      client.close();
+    }
+  }
+
+  @override
+  Future<RankingModel> getUserRanking()async{
+    // TODO: implement getUserRanking
+    String url='https://footballcoach.herokuapp.com/ranking/scores';
+    try {
+      final response = await client.get(url,headers: {
+         "token" : "${AppClass.token}"
+      });
+      print((response.body).length);
+      print(response.statusCode);
+      if(response.statusCode == 200)
+        return RankingModel.fromJson(jsonDecode(response.body));
     }
     catch(e){
       throw e;
