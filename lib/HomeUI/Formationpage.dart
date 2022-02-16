@@ -7,16 +7,16 @@ import 'package:premiercoach/blocs/home_bloc/home_bloc_event.dart';
 import 'package:premiercoach/blocs/home_bloc/home_bloc_state.dart';
 import 'package:premiercoach/model/formationModel.dart';
 import 'package:premiercoach/repository/home.dart';
-
 import 'HomePage.dart';
-class PitchPage extends StatefulWidget {
+
+class FormationPage extends StatefulWidget {
   String teamName;
-  PitchPage(this.teamName);
+  FormationPage(this.teamName);
   @override
-  _PitchPageState createState() => _PitchPageState();
+  _FormationPageState createState() => _FormationPageState();
 }
 
-class _PitchPageState extends State<PitchPage> {
+class _FormationPageState extends State<FormationPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(

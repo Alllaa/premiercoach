@@ -12,7 +12,7 @@ import 'package:premiercoach/model/user.dart';
 import 'package:premiercoach/model/user_ranking_model.dart';
 
 abstract class HomeRepository {
-//  Future<User> infoUser();
+  Future<User> infoUser();
   Future<MatchInfoModel> matchesInfo(String date);
   Future<List<Tabloue>> getTabloue();
   Future<Squad> getFormation(String team_name);
@@ -23,24 +23,24 @@ class HomeApi implements HomeRepository {
   Client client = Client();
   String urlInfo = "https://footballcoach.herokuapp.com/personal/info";
   Dio dio = new Dio();
-//  @override
-//  Future<User> infoUser() async {
-//    try {
-//      final response =
-//          await client.get(urlInfo, headers: {
-//            'token':AppClass.token
-//          });
-//      print(json.decode(response.body));
-//      if (response.statusCode == 200) {
-//        client.close();
-//        return User.fromJson(json.decode(response.body));
-//      }
-//    } catch (e) {
-//      client.close();
-//      print(e.toString());
-//      throw Exception('Failed to load info of user');
-//    }
-//  }
+  @override
+  Future<User> infoUser() async {
+    try {
+      final response =
+          await client.get(urlInfo, headers: {
+            'token':AppClass.token
+          });
+      print(json.decode(response.body));
+      if (response.statusCode == 200) {
+        client.close();
+        return User.fromJson(json.decode(response.body));
+      }
+    } catch (e) {
+      client.close();
+      print(e.toString());
+      throw Exception('Failed to load info of user');
+    }
+  }
   @override
   Future<List<Tabloue>> getTabloue() async{
     try {
@@ -96,7 +96,8 @@ class HomeApi implements HomeRepository {
       final response = await client.get(url,headers: {
          "token" : "${AppClass.token}"
       });
-      print((response.body).length);
+      print("Users ${response.body}");
+      print("Users ${AppClass.token}");
       print(response.statusCode);
       if(response.statusCode == 200)
         return RankingModel.fromJson(jsonDecode(response.body));

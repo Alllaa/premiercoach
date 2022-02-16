@@ -63,6 +63,7 @@ class AuthApi implements AuthRepository {
       }
       return json.decode(response.body)['token'];
     } catch (e) {
+      print("ERROR $e");
       XsProgressHud.hide();
       final snackBar = SnackBar(
           backgroundColor: Colors.red,

@@ -449,11 +449,12 @@ class _RegisterationState extends State<Registeration> {
       child: TextField(
         onChanged: (text) {
           setState(() {
-            passwordColor = Colors.black.withOpacity(.3);;
+            passwordColor = Colors.black.withOpacity(.3);
             passwordEntered = true;
           });
           print("First textfield $text");
         },
+        obscureText: true,
         controller: password,
         decoration: InputDecoration(
             border: InputBorder.none,
@@ -475,11 +476,12 @@ class _RegisterationState extends State<Registeration> {
       child: TextField(
         onChanged: (text) {
           setState(() {
-            confirmPasswordColor = Colors.black.withOpacity(.3);;
+            confirmPasswordColor = Colors.black.withOpacity(.3);
             confirmPasswordEntered = true;
           });
           print("First textfield $text");
         },
+        obscureText: true,
         controller: confirmPassword,
         decoration: InputDecoration(
             border: InputBorder.none,

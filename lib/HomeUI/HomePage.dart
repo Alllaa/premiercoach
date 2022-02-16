@@ -20,7 +20,7 @@ import 'package:premiercoach/repository/authentication.dart';
 import 'package:premiercoach/repository/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'PitchPage.dart';
+import 'Formationpage.dart';
 import 'StandingTable.dart';
 
 
@@ -86,7 +86,7 @@ class _HomeMainState extends State<HomeMain> {
   @override
   void initState() {
     // TODO: implement initState
-//    getUserInfo();
+    getUserInfo();
     dateSelected = DateTime.now();
     getMatches();
     super.initState();
@@ -149,9 +149,9 @@ class _HomeMainState extends State<HomeMain> {
         ),
       ),
       body:
-          widget.pageRoute == 4?PitchPage("${widget.teamName}"):
+          widget.pageRoute == 4?FormationPage("${widget.teamName}"):
           _selectedIndex == 0 ? homeWidget() : _selectedIndex == 1 ? predictWidget(context,matches.data)
-          : _selectedIndex == 2 ?UserRanking() :_selectedIndex == 3 ?StandingTabloue():PitchPage("${widget.teamName}") ,
+          : _selectedIndex == 2 ?UserRanking() :_selectedIndex == 3 ?StandingTabloue():FormationPage("${widget.teamName}") ,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color(0xff00FF87),
         elevation: 5.0,
@@ -357,29 +357,29 @@ class _HomeMainState extends State<HomeMain> {
             SizedBox(
               height: 15.0,
             ),
-            Container(
-              alignment: Alignment.center,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "Your Rank:  ",
-                    style: TextStyle(
-                        color: Color(0xff37003C),
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700),
-                  ),
-                  Text(
-                    "17th",
-                    style: TextStyle(
-                        color: Color(0xffC73A34),
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
-            ),
+//            Container(
+//              alignment: Alignment.center,
+//              child: Row(
+//                mainAxisAlignment: MainAxisAlignment.center,
+//                crossAxisAlignment: CrossAxisAlignment.center,
+//                children: <Widget>[
+//                  Text(
+//                    "Your Rank:  ",
+//                    style: TextStyle(
+//                        color: Color(0xff37003C),
+//                        fontSize: 18,
+//                        fontWeight: FontWeight.w700),
+//                  ),
+//                  Text(
+//                    "17th",
+//                    style: TextStyle(
+//                        color: Color(0xffC73A34),
+//                        fontSize: 18,
+//                        fontWeight: FontWeight.w700),
+//                  ),
+//                ],
+//              ),
+//            ),
           ],
         ),
       ),
